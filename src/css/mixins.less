@@ -1,0 +1,99 @@
+.clearfix() {
+    &:before,
+    &:after {
+        content: " "; // 1
+        display: table; // 2
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+.user-select (@value) {
+    -webkit-user-select: @value;
+    -moz-user-select: @value;
+    -ms-user-select: @value;
+    user-select: @value;
+}
+
+.transition (@property, @time) {
+    transition: @time ease @property;
+    -moz-transition: @time ease @property;
+    -webkit-transition: @time ease @property;
+}
+
+.transition (@transition) {
+    transition: @transition;
+    -moz-transition: @transition;
+    -webkit-transition: @transition;
+}
+
+.transform(@value) {
+    -webkit-transform: @value;
+    -moz-transform: @value;
+    -o-transform: @value;
+    -ms-transform: @value;
+    transform: @value;
+}
+
+.word-wrap() {
+    word-break: break-word;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    hyphens: auto;
+}
+
+.ellipsis() {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.box-shadow(@value) {
+    -webkit-box-shadow: @value;
+    -moz-box-shadow: @value;
+    box-shadow: @value;
+
+}
+
+.border-radius(@radius) {
+    -webkit-border-radius: @radius;
+    -moz-border-radius: @radius;
+    border-radius: @radius;
+}
+
+.border-radius-left(@radius) {
+    -webkit-border-top-left-radius: @radius;
+    -moz-border-radius-topleft: @radius;
+    border-top-left-radius: @radius;
+}
+
+.animation(@transition) {
+    -webkit-animation: @transition; /* Safari 4+ */
+    -moz-animation: @transition; /* Fx 5+ */
+    -o-animation: @transition; /* Opera 12+ */
+    animation: @transition; /* IE 10+ */
+}
+
+.transform-origin(@transition) {
+    -webkit-transform-origin: @transition;
+    -moz-transform-origin: @transition;
+    -ms-transform-origin: @transition;
+    transform-origin: @transition;
+}
+
+// Opacity
+.opacity(@opacity) {
+    opacity: @opacity;
+    // IE8 filter
+    @opacity-ie: (@opacity * 100);
+    filter: ~"alpha(opacity=@{opacity-ie})";
+}
+
+.background-size(@size) {
+    -webkit-background-size: @size;
+    -moz-background-size: @size;
+    -o-background-size: @size;
+    background-size: @size;
+}
+

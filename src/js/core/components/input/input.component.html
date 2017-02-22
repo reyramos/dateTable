@@ -1,0 +1,21 @@
+<label class="label" ng-bind="$ctrl.label" ng-if="$ctrl.label"></label>
+<label for="{{::$ctrl.$id}}"
+       ng-class="{'input':$ctrl.type === 'text','checkbox':$ctrl.type === 'checkbox','state-disabled':$ctrl.disabled,'state-error':$ctrl.form[$ctrl.name].$invalid}">
+    <input type="{{$ctrl.type}}" id="{{::$ctrl.$id}}"
+           ng-disabled="$ctrl.disabled"
+           placeholder="{{::$ctrl.placeholder}}"
+           name="{{::$ctrl.name}}"
+           ng-required="$ctrl.required"
+           list="{{::$ctrl.datalist}}"
+           ng-model="$ctrl.model">
+
+    <i ng-if="$ctrl.type === 'checkbox'"></i>
+    <span ng-if="$ctrl.type === 'checkbox'" ng-transclude></span>
+    <datalist id="{{::$ctrl.datalist}}" ng-if="::$ctrl.autocomplete">
+        <option value="{{opts.value}}" ng-repeat="opts in $ctrl.autocomplete track by $index">
+            {{opts.name}}
+        </option>
+    </datalist>
+</label>
+<p ng-if="$ctrl.note" class="note" ng-bind-html="$ctrl.note"></p>
+<div ng-if="$ctrl.noteError && $ctrl.form[$ctrl.name].$invalid" class="note note-error">This is a required field.</div>

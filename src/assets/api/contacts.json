@@ -1,0 +1,30 @@
+[
+
+    {
+        "type":"Executive",
+        "name":"Ann Brown",
+        "title":"CEO",
+        "phone":"(512)456-5555",
+        "ext":"",
+        "fax":"(512)456-5555",
+        "email":"Executive"
+    },
+    {
+        "type":"Inmar",
+        "name":"Mary Smith",
+        "title":"Lorem Ipsum",
+        "phone":"(512)456-5555",
+        "ext":"",
+        "fax":"(512)456-5555",
+        "email":"Immar Ar"
+    },
+    {
+        "type":"Executive",
+        "name":"John Doe",
+        "title":"Dolor Sit",
+        "phone":"(512)456-5555",
+        "ext":"",
+        "fax":"(512)456-5555",
+        "email":"Daily"
+    }
+]
