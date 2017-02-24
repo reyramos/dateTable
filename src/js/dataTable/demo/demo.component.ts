@@ -6,33 +6,34 @@
 import * as angular from "angular";
 
 
-const PrettyJSON: any = require('./pretty-json');
-require('pretty-json/css/pretty-json.css');
+// const PrettyJSON: any = require('./pretty-json');
+// require('pretty-json/css/pretty-json.css');
 
 
 class DemoComponentCtrl implements ng.IComponentController {
     
     static $inject = ['$scope', '$element'];
     
-    public filters: any;
-    public fields: any;
-    public output: string;
-    private JSON_PRETTY;
+    public TH: any = [];
     
     
     constructor(private $scope, private $element) {
-        this.JSON_PRETTY = $element.find('#PRETTY_JSON');
+        // this.JSON_PRETTY = $element.find('#PRETTY_JSON');
         
     }
     
     $onInit() {
+        let self: any = this;
+        
+        for (let i = 0; i < 10; i++) {
+            self.TH.push(i)
+        }
     }
     
-
- 
-
     
 }
+
+require('./style.less');
 
 export class DemoComponent implements ng.IComponentOptions {
     public template: any;
@@ -44,7 +45,3 @@ export class DemoComponent implements ng.IComponentOptions {
         this.controller = DemoComponentCtrl;
     }
 }
-
-
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/queryBuilder/demo/demo.component.ts

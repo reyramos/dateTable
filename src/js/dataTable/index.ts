@@ -6,9 +6,11 @@
 "use strict";
 
 import * as angular from "angular";
+import {Table} from "./component/table.component";
 
 var app = angular.module("app.dataTable", []);
 
+app.component('eqTable', new Table());
 
 
 module.exports = app;

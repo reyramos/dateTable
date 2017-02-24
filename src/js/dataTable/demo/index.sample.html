@@ -1,4 +1,4 @@
-<div class="jumbotron">
+<!--<div class="jumbotron">
     <div class="container">
         <h1>Angular Data Table</h1>
         <p></p>
@@ -6,10 +6,29 @@
             <a class="btn btn-default" role="button" href="https://github.com/reyramos/dataTable">Code on Github</a>
         </p>
     </div>
-</div>
+</div>-->
 <div class="container">
-    <section class="bs-docs-section">
+    <section class="bs-docs-section" style="padding-top: 40px;height: 500px;">
 
+        <eq-table>
+            <table>
+                <thead>
+                <tr>
+                    <th ng-repeat="p in [] | range:10 track by $index">
+                        <span>thead {{$index}}</span>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="row in [] | range:100">
+                    <td ng-repeat="cell in [] | range:10 track by $index">
+                        <span> cell {{$index}}</span>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </eq-table>
 
     </section>
 </div>

@@ -1,0 +1,42 @@
+eq-table {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: flex-start;
+    align-items: stretch;
+    align-content: stretch;
+
+    table {
+        width: 100%;
+        height: 100%;
+
+        display: flex;
+        flex-direction: column;
+
+        justify-content: flex-start;
+        align-items: stretch;
+        align-content: stretch;
+
+        thead {
+            overflow: hidden;
+            .eq-thead-spacer {
+                padding: 0;
+                margin: 0;
+                border: none;
+                display: inline-block;
+            }
+
+        }
+
+        tbody {
+            flex: 1;
+            overflow: auto;
+        }
+    }
+
+}
+
+
