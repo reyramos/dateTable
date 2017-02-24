@@ -37,7 +37,7 @@ class TableCtrl implements ng.IComponentController {
         this.$postLinkTimeout = setTimeout(()=> {
             let offset = self.thead.clientWidth - self.tbody.clientWidth;
             var spacer = document.createElement("td");
-            spacer.classList += 'eq-thead-spacer';
+            (spacer as any).classList += 'eq-thead-spacer';
             this.thead.children[0].appendChild(spacer);
             spacer.style.width = offset + "px";
         }, 0);
