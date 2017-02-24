@@ -8,20 +8,20 @@ require('../bower_components/jasmine-jquery/lib/jasmine-jquery.js');
 
 
 
-/**
- * This is a Global injection for $log Provider, without it, it will
- * throw error $delegate
- */
-
-beforeEach(angular.mock.module('phxApp', ['$provide', function ($provide) {
-	/**
-	 * The Decorator keeps throwing error which is something
-	 * that would be needed within the test
-	 */
-	$provide.decorator('$log', [function () {
-		return console;
-	}]);
-}]));
+// /**
+//  * This is a Global injection for $log Provider, without it, it will
+//  * throw error $delegate
+//  */
+//
+// beforeEach(angular.mock.module('app', ['$provide', function ($provide) {
+// 	/**
+// 	 * The Decorator keeps throwing error which is something
+// 	 * that would be needed within the test
+// 	 */
+// 	$provide.decorator('$log', [function () {
+// 		return console;
+// 	}]);
+// }]));
 
 /**
  * ./ROOT/COMPONENTS
@@ -44,6 +44,5 @@ appContext.keys().forEach(appContext);
 
 
 //IMPORT THE APPLICATION ENTRIES
-require('../src/app.config.js');
 require('../src/js/app');
 require('../src/js/bootstrap');

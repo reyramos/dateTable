@@ -10,7 +10,7 @@ import {Table} from "./component/table.component";
 
 var app = angular.module("app.dataTable", []);
 
-app.component('eqTable', new Table());
+app.component('aTable', new Table());
 
 
 module.exports = app;

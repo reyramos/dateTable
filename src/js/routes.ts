@@ -1,5 +1,5 @@
 import {Public} from "./public/public.routes";
-import {DataTable} from "./dataTable/routes";
+import {DataTable} from "./table/routes";
 
 /**
  * Created by ramor11 on 4/19/2016.

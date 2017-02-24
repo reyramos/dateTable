@@ -12,7 +12,6 @@ module.exports = {
 	module: commonConfig.module,
 	plugins: [
 		new webpack.DefinePlugin({
-			'WEBPACK_ENVIRONMENT': JSON.stringify(ENV),
 			'process.env': {
 				'ENV': JSON.stringify(ENV)
 			}
@@ -22,9 +21,7 @@ module.exports = {
 			"$": "jquery",
 			'window.$': 'jquery',
 			'window.jQuery': 'jquery',
-			"jquery": 'jquery',
-			"UAParser": 'ua-parser-js/src/ua-parser.js'
-
+			"jquery": 'jquery'
 		})
 	],
 	/*

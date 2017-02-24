@@ -53,8 +53,6 @@ module.exports = {
 		extensions: [".ts", ".tsx", ".js", ".less", ".json", ".css", ".png", ".jpg"],
 		alias: {
 			angular: "angular",
-			backbone: "backbone",
-			underscore: "underscore/underscore",
 			jquery: 'jquery/dist/jquery',
 			rx: "rxjs/index"
 		}
@@ -213,9 +211,7 @@ module.exports = {
 			"jquery": "jquery",
 			'window.$': 'jquery',
 			"window.jQuery": "jquery",
-			"Rx": 'rx',
-			"_": 'underscore',
-			"Backbone": 'backbone'
+			"Rx": 'rx'
 		})
 	],
 	// target: "node",
