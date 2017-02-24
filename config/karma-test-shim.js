@@ -1,3 +1,4 @@
+
 Error.stackTraceLimit = Infinity;
 
 
@@ -5,7 +6,6 @@ Error.stackTraceLimit = Infinity;
 require('../src/js/vendor');
 require('../bower_components/angular-mocks/angular-mocks.js');
 require('../bower_components/jasmine-jquery/lib/jasmine-jquery.js');
-
 
 
 // /**
@@ -22,14 +22,14 @@ require('../bower_components/jasmine-jquery/lib/jasmine-jquery.js');
 // 		return console;
 // 	}]);
 // }]));
-
-/**
- * ./ROOT/COMPONENTS
- * This will inject all necessary components into Karma test file for dependencies injection
- * @param requireContext
- * @returns {*}
- */
-
+//
+// /**
+//  * ./ROOT/COMPONENTS
+//  * This will inject all necessary components into Karma test file for dependencies injection
+//  * @param requireContext
+//  * @returns {*}
+//  */
+//
 // function requireAll(requireContext) {
 // 	return requireContext.keys().map(requireContext);
 // }
@@ -38,11 +38,10 @@ require('../bower_components/jasmine-jquery/lib/jasmine-jquery.js');
 
 
 //LOADING ALL THE TEST WITHIN THE SRC DIRECTORY
-var appContext = require.context('../src', true, /[^\/]+spec\/*\.js$/g);
+var appContext = require.context('../src', true, /[^\/]+spec\/*\.ts$/g);
 appContext.keys().forEach(appContext);
 
 
-
-//IMPORT THE APPLICATION ENTRIES
-require('../src/js/app');
-require('../src/js/bootstrap');
+// //IMPORT THE APPLICATION ENTRIES
+// require('../src/js/app.module');
+// require('../src/js/bootstrap');
