@@ -15,10 +15,12 @@ class DemoComponentCtrl implements ng.IComponentController {
     static $inject = ['$scope', '$element'];
     
     public TH: any = [];
+    public offsetX: any = [];
+    public test: any;
     
     
     constructor(private $scope, private $element) {
-        // this.JSON_PRETTY = $element.find('#PRETTY_JSON');
+        this.test = $element.find('#test');
         
     }
     
@@ -28,6 +30,18 @@ class DemoComponentCtrl implements ng.IComponentController {
         for (let i = 0; i < 10; i++) {
             self.TH.push(i)
         }
+    }
+    
+    
+    TheHead($e, index) {
+        console.clear()
+        console.log('TheHead', index)
+    }
+    
+    
+    onColumnChange($e) {
+        
+        console.log('onColumnChange', $e)
     }
     
     

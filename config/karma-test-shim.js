@@ -41,7 +41,3 @@ require('../bower_components/jasmine-jquery/lib/jasmine-jquery.js');
 var appContext = require.context('../src', true, /[^\/]+spec\/*\.ts$/g);
 appContext.keys().forEach(appContext);
 
-
-// //IMPORT THE APPLICATION ENTRIES
-// require('../src/js/app.module');
-// require('../src/js/bootstrap');
