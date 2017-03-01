@@ -38,7 +38,7 @@ class DemoComponentCtrl implements ng.IComponentController {
     $onInit() {
         let self: any = this;
         
-        console.log('this', this)
+        // console.log('this', this)
     }
     
     

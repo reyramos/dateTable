@@ -31,6 +31,7 @@ a-table {
     .a-table-selected-box {
         background-color: #fff;
         z-index: -1;
+        display: none;
         &:before {
             content: '';
             position: absolute;
@@ -81,6 +82,7 @@ a-table {
         th,td{
             &.selected-cell{
                 visibility: hidden;
+                display: none;
             }
         }
     }
