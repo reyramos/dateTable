@@ -263,7 +263,7 @@ class TableCtrl implements ng.IComponentController {
             if (self.$aTableMoveBox !== null) {
                 if (lastSeenAt)totalDistance += e.pageX - lastSeenAt;
                 lastSeenAt = e.pageX;
-                let left = totalDistance + self.$column[0].offsetLeft;
+                let left = totalDistance + self.$column[0].offsetLeft - (self.tbody.scrollLeft || 0);
                 self.$aTableMoveBox.css({
                     left: left,
                 });
