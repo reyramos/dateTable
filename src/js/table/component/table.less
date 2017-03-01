@@ -30,7 +30,7 @@ a-table {
 
     .a-table-selected-box {
         background-color: #fff;
-        z-index: 1;
+        z-index: -1;
         &:before {
             content: '';
             position: absolute;
@@ -45,11 +45,9 @@ a-table {
 
     .a-table-predicted-column {
         position: absolute;
-        //background-color: #000;
         pointer-events: none;
-        z-index: 1;
-        //opacity: .4;
-        box-shadow: inset 0px 0px 7px 1px rgba(0, 0, 0, .4);
+        z-index: -1;
+        box-shadow: inset 0px 0px 10px 2px rgba(0,0,0,0.4);
     }
 
     table {
@@ -79,25 +77,18 @@ a-table {
             flex: 1;
             overflow: auto;
         }
+
+        th,td{
+            &.selected-cell{
+                visibility: hidden;
+            }
+        }
     }
 
     table {
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
-    }
-
-    .jsdragtable-contents {
-        background: #fff;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        box-shadow: 2px 2px 5px #aaa;
-        padding: 0;
-    }
-
-    .jsdragtable-contents table {
-        margin-bottom: 0;
     }
 }
 

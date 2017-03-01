@@ -20,6 +20,7 @@ class TableCtrl implements ng.IComponentController {
     private $column;
     private headers: Array<any> = [];
     
+    private onUpdate;
     private $postLinkTimeout;
     private $tableTimeout;
     private $aTableMoveBox;
@@ -92,6 +93,8 @@ class TableCtrl implements ng.IComponentController {
         
         
         if (this.$column)this.dropColumn(mEvent).then(()=> {
+            this.$column.removeClass('selected-cell');
+            this.removeCellClass();
             this.$column = null;
         });
         
@@ -101,16 +104,32 @@ class TableCtrl implements ng.IComponentController {
         
     }
     
+    private findParent(ele) {
+        let parent = ele.parentNode;
+        if (parent && parent.nodeName === 'TH') {
+            return parent;
+        } else if (parent) {
+            return this.findParent(parent);
+        }
+    }
     
     private dropColumn(e) {
-        let target = angular.element(e.target.parentNode);
-        let $column = this.$column;
+        let self: any = this;
+        let target: any = self.findParent(e.target) || e.target;
+        let $column = this.$column[0];
         return new Promise((resolve)=> {
-            // if (target)
-            //     console.log('$column:e', target);
-            // // console.log('$column:drop', $column);
-            // console.log('$column:drop', $column[0].cellIndex);
-            resolve();
+            let $e = {
+                fromColumn: $column,
+                toColumn  : target || $column,
+                fromIndex : $column.cellIndex,
+                toIndex   : target.cellIndex,
+            };
+            
+            self.onUpdate({
+                $event: $e
+            });
+            
+            resolve($e);
         })
     }
     
@@ -148,41 +167,9 @@ class TableCtrl implements ng.IComponentController {
                 let head = angular.element(header);
                 self.headers.push(head);
                 head.on("mousedown touchstart", function (e) {
+                    e.preventDefault();
                     self.$column = angular.element(this);
-                    let pos = self.getPosition(this);
-                    let cellIndex = (self.$column[0] as any).cellIndex;
-                    if (pos && !self.$aTableMoveBox) {
-                        self.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
-                        self.$aTableSelectedBox = angular.element('<div class="a-table-selected-box" draggable=""></div>');
-                        self.$aTableMoveBox.css({
-                            width : self.$column[0].clientWidth + 'px',
-                            height: self.table[0].clientHeight + 'px',
-                            left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
-                        });
-                        
-                        self.$aTableSelectedBox.css({
-                            width : self.$column[0].clientWidth + 'px',
-                            height: self.table[0].clientHeight + 'px',
-                            left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
-                        });
-                        
-                        let dragTable = self.createDraggableTable();
-                        
-                        self.table.find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (cellIndex, cell) {
-                            let tr = angular.element("<tr/>");
-                            let td = angular.element("<td/>");
-                            td.html(cell.innerHTML);
-                            tr.append(td);
-                            dragTable.find("tbody").append(tr);
-                        });
-                        
-                        self.$aTableMoveBox.append(dragTable);
-                        self.$element.append(self.$aTableMoveBox)
-                        self.$element.append(self.$aTableSelectedBox)
-                        
-                    }
-                    
-                    self.selectColumn(e.originalEvent || e);
+                    self.selectColumn(this);
                 })
                     .on("mouseup touchend", function (e) {
                         console.log('$postLink => mouseup');
@@ -195,6 +182,14 @@ class TableCtrl implements ng.IComponentController {
         
     }
     
+    private removeCellClass() {
+        
+        let cellIndex = (this.$column[0] as any).cellIndex;
+        this.table.find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (i, cell) {
+            angular.element(cell).removeClass('selected-cell')
+        });
+    }
+    
     
     private createDraggableTable = function () {
         let self: any = this;
@@ -205,6 +200,8 @@ class TableCtrl implements ng.IComponentController {
         let tr = angular.element("<tr/>");
         let th = angular.element("<th/>");
         table.addClass(this.table.attr("class"));
+        
+        this.$column.addClass('selected-cell');
         
         table.css({
             width : this.$column[0].clientWidth + 'px',
@@ -235,11 +232,48 @@ class TableCtrl implements ng.IComponentController {
         
         this.table.off("mousemove touchmove mouseup touchend").on("mousemove touchmove", function (event) {
             clearTimeout(MouseEventTimeout);
+            
+            if (!self.$column)return;
             let e = event.originalEvent || event;
             e.preventDefault();
             
-            let cellIndex = e.target.cellIndex;
             
+            // self.$column = angular.element(cEvent);
+            let pos = self.getPosition(cEvent);
+            let cellIndex = (self.$column[0] as any).cellIndex;
+            if (pos && !self.$aTableMoveBox) {
+                self.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
+                self.$aTableSelectedBox = angular.element('<div class="a-table-selected-box" draggable=""></div>');
+                self.$aTableMoveBox.css({
+                    width : self.$column[0].clientWidth + 'px',
+                    height: self.table[0].clientHeight + 'px',
+                    left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
+                });
+                
+                self.$aTableSelectedBox.css({
+                    width : self.$column[0].clientWidth + 'px',
+                    height: self.table[0].clientHeight + 'px',
+                    left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
+                });
+                
+                let dragTable = self.createDraggableTable();
+                
+                self.table.find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (cellIndex, cell) {
+                    let tr = angular.element("<tr/>");
+                    let td = angular.element("<td/>");
+                    cell.classList += " selected-cell";
+                    td.html(cell.innerHTML);
+                    tr.append(td);
+                    dragTable.find("tbody").append(tr);
+                });
+                
+                self.$aTableMoveBox.append(dragTable);
+                self.$element.append(self.$aTableMoveBox)
+                self.$element.append(self.$aTableSelectedBox)
+                
+            }
+            
+            cellIndex = e.target.cellIndex;
             if (cellIndex > -1) {
                 MouseEventTimeout = setTimeout(()=> {
                     
@@ -294,7 +328,9 @@ export class Table implements ng.IComponentOptions {
     
     constructor() {
         this.bindings = {
-            onUpdate: '&'
+            onUpdate: '&',
+            columns : '=?',
+            rows    : '=?'
         };
         
         
