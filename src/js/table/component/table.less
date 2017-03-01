@@ -10,10 +10,46 @@ a-table {
     align-items: stretch;
     align-content: stretch;
     overflow: hidden;
+
+    .a-table-selected-box,
     .a-table-move-box {
         position: absolute;
-        background-color: red;
+        background-color: #ffffff;
         pointer-events: none;
+        z-index: 2;
+
+        > table {
+            width: 100%;
+            thead,
+            tbody {
+                overflow: hidden;
+            }
+        }
+        overflow: hidden;
+    }
+
+    .a-table-selected-box {
+        background-color: #fff;
+        z-index: 1;
+        &:before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            left: 0;
+            z-index: 0;
+            opacity: .4;
+        }
+    }
+
+    .a-table-predicted-column {
+        position: absolute;
+        //background-color: #000;
+        pointer-events: none;
+        z-index: 1;
+        //opacity: .4;
+        box-shadow: inset 0px 0px 7px 1px rgba(0, 0, 0, .4);
     }
 
     table {
@@ -29,6 +65,7 @@ a-table {
 
         thead {
             overflow: hidden;
+            cursor: move;
             .eq-thead-spacer {
                 padding: 0;
                 margin: 0;

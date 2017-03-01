@@ -18,11 +18,12 @@ class TableCtrl implements ng.IComponentController {
     private thead;
     private tbody;
     private $column;
+    private headers: Array<any> = [];
     
     private $postLinkTimeout;
     private $tableTimeout;
     private $aTableMoveBox;
-    
+    private $aTableSelectedBox;
     
     constructor(private $element, private $scope: ng.IScope) {
         this.table = angular.element($element[0].querySelector("table"));
@@ -86,6 +87,7 @@ class TableCtrl implements ng.IComponentController {
         if (this.$aTableMoveBox) {
             this.table.off("mousemove touchmove");
             this.$aTableMoveBox.remove();
+            this.$aTableSelectedBox.remove();
         }
         
         
@@ -94,6 +96,7 @@ class TableCtrl implements ng.IComponentController {
         });
         
         this.$aTableMoveBox = null;
+        this.$aTableSelectedBox = null;
         
         
     }
@@ -103,10 +106,10 @@ class TableCtrl implements ng.IComponentController {
         let target = angular.element(e.target.parentNode);
         let $column = this.$column;
         return new Promise((resolve)=> {
-            if (target)
-                console.log('$column:e', target);
-            // console.log('$column:drop', $column);
-            console.log('$column:drop', $column[0].cellIndex);
+            // if (target)
+            //     console.log('$column:e', target);
+            // // console.log('$column:drop', $column);
+            // console.log('$column:drop', $column[0].cellIndex);
             resolve();
         })
     }
@@ -143,24 +146,44 @@ class TableCtrl implements ng.IComponentController {
         this.$tableTimeout = setTimeout(()=> {
             self.table.find("th").each(function (hIndex, header) {
                 let head = angular.element(header);
-                head.off("mousedown touchstart mouseup touchend")
-                    .on("mousedown touchstart", function (e) {
-                        self.$column = angular.element(this);
-                        let pos = self.getPosition(this);
-                        if (pos && !self.$aTableMoveBox) {
-                            self.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
-                            self.$aTableMoveBox.css({
-                                width : self.$column[0].clientWidth + 'px',
-                                height: self.table[0].clientHeight + 'px',
-                                left  : (pos.left + 1) + 'px',
-                                top   : pos.top + 'px'
-                            });
-                            
-                            self.$element.append(self.$aTableMoveBox)
-                        }
+                self.headers.push(head);
+                head.on("mousedown touchstart", function (e) {
+                    self.$column = angular.element(this);
+                    let pos = self.getPosition(this);
+                    let cellIndex = (self.$column[0] as any).cellIndex;
+                    if (pos && !self.$aTableMoveBox) {
+                        self.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
+                        self.$aTableSelectedBox = angular.element('<div class="a-table-selected-box" draggable=""></div>');
+                        self.$aTableMoveBox.css({
+                            width : self.$column[0].clientWidth + 'px',
+                            height: self.table[0].clientHeight + 'px',
+                            left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
+                        });
                         
-                        self.selectColumn(e.originalEvent || e);
-                    })
+                        self.$aTableSelectedBox.css({
+                            width : self.$column[0].clientWidth + 'px',
+                            height: self.table[0].clientHeight + 'px',
+                            left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
+                        });
+                        
+                        let dragTable = self.createDraggableTable();
+                        
+                        self.table.find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (cellIndex, cell) {
+                            let tr = angular.element("<tr/>");
+                            let td = angular.element("<td/>");
+                            td.html(cell.innerHTML);
+                            tr.append(td);
+                            dragTable.find("tbody").append(tr);
+                        });
+                        
+                        self.$aTableMoveBox.append(dragTable);
+                        self.$element.append(self.$aTableMoveBox)
+                        self.$element.append(self.$aTableSelectedBox)
+                        
+                    }
+                    
+                    self.selectColumn(e.originalEvent || e);
+                })
                     .on("mouseup touchend", function (e) {
                         console.log('$postLink => mouseup');
                         self.MouseUp(e)
@@ -173,22 +196,81 @@ class TableCtrl implements ng.IComponentController {
     }
     
     
+    private createDraggableTable = function () {
+        let self: any = this;
+        
+        let table = angular.element("<table/>");
+        let thead = angular.element("<thead/>");
+        let tbody = angular.element("<tbody/>");
+        let tr = angular.element("<tr/>");
+        let th = angular.element("<th/>");
+        table.addClass(this.table.attr("class"));
+        
+        table.css({
+            width : this.$column[0].clientWidth + 'px',
+            height: this.table[0].clientHeight + 'px'
+        });
+        
+        
+        th.html(this.$column.html());
+        tr.append(th);
+        thead.append(tr);
+        table.append(thead);
+        table.append(tbody);
+        return table;
+    };
+    
+    private predictedColumn: any;
+    
     private selectColumn(cEvent) {
         let self: any = this;
+        let MouseEventTimeout: any;
+        let identity: any;
+        
+        if (identity)identity.remove();
         if (!self.$column)return;
-        this.table.on("mousemove touchmove", function (event) {
+        
+        var totalDistance = 0;
+        var lastSeenAt = 0;
+        
+        this.table.off("mousemove touchmove mouseup touchend").on("mousemove touchmove", function (event) {
+            clearTimeout(MouseEventTimeout);
             let e = event.originalEvent || event;
-            let target = angular.element(e.target.parentNode);
-    
             e.preventDefault();
             
+            let cellIndex = e.target.cellIndex;
+            
+            if (cellIndex > -1) {
+                MouseEventTimeout = setTimeout(()=> {
+                    
+                    let predictedColumn = self.headers[cellIndex];
+                    if (!angular.equals(self.predictedColumn, predictedColumn))self.predictedColumn = predictedColumn;
+                    
+                    let pos = self.getPosition(predictedColumn);
+                    if (!identity)identity = angular.element('<div class="a-table-predicted-column" draggable=""></div>');
+                    identity.css({
+                        width : predictedColumn[0].clientWidth + 'px',
+                        height: self.table[0].clientHeight + 'px',
+                        left  : (pos.left + (cellIndex ? 1 : 0)) + 'px',
+                        top   : pos.top + 'px'
+                    });
+                    
+                    self.$element.append(identity);
+                }, 2)
+                
+            }
+            
             if (self.$aTableMoveBox !== null) {
-                console.log('target', target)
+                if (lastSeenAt)totalDistance += e.pageX - lastSeenAt;
+                lastSeenAt = e.pageX;
+                let left = totalDistance + self.$column[0].offsetLeft;
                 self.$aTableMoveBox.css({
-                    left: event.pageX - self.$column[0].clientWidth,
+                    left: left,
                 });
             }
             
+        }).on("mouseup touchend", function (event) {
+            if (identity)identity.remove();
         })
         
     }

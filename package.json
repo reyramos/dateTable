@@ -8,7 +8,7 @@
         "test": "karma start",
         "postinstall": "typings install",
         "typings": "typings install",
-        "build": "rimraf dist && rimraf build && rimraf .tmp && webpack --config config/webpack.prod.js --progress --profile && npm run compile",
+        "build": "rimraf dist && rimraf build && rimraf .tmp && webpack --config config/webpack.prod.js --progress --profile",
         "build:serve": "npm run build && node express",
         "serve": "node express",
         "minify": "uglifyjs-folder build -eo build",
