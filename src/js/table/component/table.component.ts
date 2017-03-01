@@ -14,11 +14,19 @@ class TableCtrl implements ng.IComponentController {
     
     
     static $inject: Array<string> = ['$element', '$scope'];
+    
     private table;
     private thead;
     private tbody;
     private $column;
     private headers: Array<any> = [];
+    
+    private columns;
+    private rows;
+    
+    //compare changes
+    private $columns;
+    private $rows;
     
     private onUpdate;
     private $postLinkTimeout;
@@ -46,6 +54,11 @@ class TableCtrl implements ng.IComponentController {
          Update the spacer if vertical scroll exist
          */
         this.postSpacer();
+        
+        if (!angular.equals(this.columns, this.$columns)) {
+            this.$columns = angular.copy(this.columns);
+            console.log('columns', this.columns)
+        }
     }
     
     /**
@@ -57,7 +70,6 @@ class TableCtrl implements ng.IComponentController {
             let offset = self.thead[0].clientWidth - self.tbody.clientWidth;
             let spacer = self.thead.find('.eq-thead-spacer');
             if (offset && !spacer.length) {
-                console.log('spacer', spacer)
                 spacer = document.createElement("td");
                 (spacer as any).classList += 'eq-thead-spacer';
                 this.thead[0].children[0].appendChild(spacer);
@@ -118,12 +130,25 @@ class TableCtrl implements ng.IComponentController {
         let target: any = self.findParent(e.target) || e.target;
         let $column = this.$column[0];
         return new Promise((resolve)=> {
+            
             let $e = {
                 fromColumn: $column,
                 toColumn  : target || $column,
                 fromIndex : $column.cellIndex,
                 toIndex   : target.cellIndex,
             };
+            if (self.columns) {
+                
+                let from = angular.copy(self.columns[$e.fromIndex]);
+                
+                self.columns.splice($e.toIndex + 1, 0, from);
+                self.columns.splice($e.fromIndex, 1);
+                
+                Object.assign($e, {
+                    newOrder: self.columns
+                });
+            }
+            
             
             self.onUpdate({
                 $event: $e

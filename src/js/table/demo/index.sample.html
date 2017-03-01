@@ -10,12 +10,12 @@
 <div class="container">
     <section class="bs-docs-section" style="padding-top: 40px;height: 500px;">
 
-        <a-table on-update="$ctrl.onColumnChange($event)" columns="$ctrl.columns" rows="$ctrl.rows">
+        <a-table on-update="$ctrl.onColumnChange($event)" columns="$ctrl.columns">
             <table>
                 <thead>
                 <tr>
-                    <th ng-repeat="p in [] | range:10 track by $index">
-                        <span><button ng-click="$ctrl.TheHead($event, $index)">thead {{$index}}</button></span>
+                    <th ng-repeat="p in $ctrl.columns track by $index">
+                        <span><button ng-click="$ctrl.TheHead($event, p)">thead {{$index}}</button></span>
                     </th>
                 </tr>
                 </thead>

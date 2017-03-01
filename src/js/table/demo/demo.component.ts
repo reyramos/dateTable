@@ -14,22 +14,31 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     static $inject = ['$scope', '$element'];
     
-    public TH: any = [];
-    public offsetX: any = [];
     public test: any;
     
     
+    public columns = [];
+    public rows = [];
+    
     constructor(private $scope, private $element) {
         this.test = $element.find('#test');
+        let self: any = this;
         
+        /**
+         * Build some fake data
+         */
+        for (let i = 0; i < 10; i++) {
+            let col_name = 'column_' + i;
+            self.columns.push({
+                name: col_name
+            });
+        }
     }
     
     $onInit() {
         let self: any = this;
         
-        for (let i = 0; i < 10; i++) {
-            self.TH.push(i)
-        }
+        console.log('this', this)
     }
     
     
