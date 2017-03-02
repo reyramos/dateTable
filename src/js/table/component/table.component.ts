@@ -48,21 +48,6 @@ class TableCtrl implements ng.IComponentController {
         this.tbody.on('scroll', function (e) {
             self.thead[0].scrollLeft = this.scrollLeft;
         });
-        
-        this.$tableTimeout = setTimeout(()=> {
-            self.table.find("th").each(function (hIndex, header) {
-                let head = angular.element(header);
-                self.headers.push(head);
-                head.on("mousedown touchstart", function (e) {
-                    e.preventDefault();
-                    self.$selectedColumn = angular.element(this);
-                    self.selectColumn(this);
-                }).on("mouseup touchend", function (e) {
-                    self.MouseUp(e)
-                });
-            });
-            self.AddWindowEvent();
-        }, 0);
     }
     
     $doCheck() {
@@ -279,18 +264,11 @@ class TableCtrl implements ng.IComponentController {
             let cellIndex = (self.$selectedColumn[0] as any).cellIndex;
             if (pos && !self.$aTableMoveBox) {
                 self.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
-                // self.$aTableSelectedBox = angular.element('<div class="a-table-selected-box" draggable=""></div>');
                 self.$aTableMoveBox.css({
                     width : self.$selectedColumn[0].clientWidth + 'px',
                     height: self.table[0].clientHeight + 'px',
                     left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
                 });
-                
-                // self.$aTableSelectedBox.css({
-                //     width : '100%',//self.$selectedColumn[0].clientWidth + 'px',
-                //     height: self.table[0].clientHeight + 'px',
-                //     left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
-                // });
                 
                 let dragTable = self.createDraggableTable();
                 dragTable.addClass('draggable');
@@ -307,7 +285,6 @@ class TableCtrl implements ng.IComponentController {
                 
                 self.$aTableMoveBox.append(dragTable);
                 self.$element.append(self.$aTableMoveBox);
-                // self.$element.append(self.$aTableSelectedBox)
                 
             }
             
@@ -320,14 +297,6 @@ class TableCtrl implements ng.IComponentController {
                     predictedColumn = self.headers[cellIndex];
                     nextSibling = predictedColumn[0].nextElementSibling;
                     if (!angular.equals(self.predictedColumn, predictedColumn))self.predictedColumn = predictedColumn;
-                    
-                    
-                    // nextSibling.parentNode.insertBefore(self.$selectedColumn[0], nextSibling)
-                    // self.tbody.find("tr td:nth-child(" + (nextSibling.cellIndex + 1) + ")").each(function (i, cell) {
-                    //     cell.parentNode.insertBefore(self.$selectedColumnRows[i], cell)
-                    // });
-                    // offset = predictedColumn[0].clientWidth;
-                    // console.log('offset', offset)
                     
                 }, 2)
             }

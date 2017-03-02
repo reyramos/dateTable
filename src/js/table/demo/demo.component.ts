@@ -52,7 +52,7 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     onColumnChange($e) {
         
-        console.log('onColumnChange', $e)
+        // console.log('onColumnChange', $e)
     }
     
     
