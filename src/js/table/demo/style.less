@@ -2,6 +2,23 @@ table {
     width: 100%;
     border: thin solid #444444;
 
+    thead {
+        th, td {
+            border-bottom: thin solid #444444;
+        }
+    }
+
+    tbody{
+       tr{
+           &:first-child{
+               th, td {
+                   border-top: none;
+
+               }
+           }
+       }
+    }
+
     td,
     th {
         padding: 10px;
