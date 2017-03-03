@@ -14,6 +14,7 @@ class TableCtrl implements ng.IComponentController {
     
     
     static $inject: Array<string> = ['$element', '$scope'];
+    public reorder;
     
     private table;
     private thead;
@@ -23,11 +24,7 @@ class TableCtrl implements ng.IComponentController {
     private headers: Array<any> = [];
     
     private columns;
-    private rows;
-    
-    //compare changes
     private $columns;
-    private $rows;
     
     private onUpdate;
     private $postLinkTimeout;
@@ -55,17 +52,22 @@ class TableCtrl implements ng.IComponentController {
             self.thead[0].scrollLeft = this.scrollLeft;
         });
         
-        this.$element.append(this.$aPredictedBox);
-        this.$aPredictedBox.css({
-            display: 'none'
-        })
+        console.log('draggable', this)
+        
+        if (this.reorder) {
+            this.$element.append(this.$aPredictedBox);
+            this.$aPredictedBox.css({
+                display: 'none'
+            });
+        }
+        
     }
     
     $doCheck() {
         clearTimeout(this.$postLinkTimeout);
         this.postSpacer();
         
-        if (!angular.equals(this.$columns, this.columns)) {
+        if (this.reorder && !angular.equals(this.$columns, this.columns)) {
             this.$columns = angular.copy(this.columns);
             this.RemoveWindowEvent();
             this.AttachEvents();
@@ -82,10 +84,13 @@ class TableCtrl implements ng.IComponentController {
     
     private AttachEvents() {
         let self: any = this;
+        if (!this.reorder)return;
+        
         self.headers = [];
         this.$tableTimeout = setTimeout(()=> {
             self.table.find("th").each(function (hIndex, header) {
                 let head = angular.element(header);
+                head.css({cursor: 'move'});
                 self.headers.push(head);
                 head.off("mousedown touchstart").on("mousedown touchstart", function (e) {
                     e.preventDefault();
@@ -378,7 +383,7 @@ class TableCtrl implements ng.IComponentController {
                 width  : this.$thCell.offsetWidth + 'px',
                 left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
             });
-    
+            
             let idx = e ? cellPosition - 1 : cellPosition;
             let predicted = self.headers[idx > -1 ? idx : 0][0];
             self.$predictedColumn = predicted;
@@ -407,7 +412,7 @@ export class Table implements ng.IComponentOptions {
         this.bindings = {
             onUpdate: '&',
             columns : '=?',
-            rows    : '=?'
+            reorder : '<?'
         };
         
         
