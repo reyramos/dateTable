@@ -11,7 +11,7 @@ a-table {
     align-content: stretch;
     overflow: hidden;
 
-    .a-table-selected-box,
+    //.a-table-selected-box,
     .a-table-move-box {
         position: absolute;
         background-color: #ffffff;
@@ -26,29 +26,16 @@ a-table {
             }
         }
         overflow: hidden;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
     }
 
-    .a-table-clone {
-        position: absolute;
-        display: none;
-        z-index: -1;
+    .a-table-predicted-box {
         top: 0;
-    }
+        height: 100%;
+        position: absolute;
+        background-color: lightgrey;
+        box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 0, 0.4);
 
-    .a-table-selected-box {
-        background-color: #fff;
-        z-index: -1;
-        display: none;
-        &:before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: #000;
-            left: 0;
-            z-index: 0;
-            opacity: .4;
-        }
     }
 
     table {
@@ -77,6 +64,20 @@ a-table {
         tbody {
             flex: 1;
             overflow: auto;
+
+            //.a-table-predicted-column{
+            //    > span {
+            //        &:before {
+            //            content: '';
+            //            width: inherit;
+            //            height: 200%;
+            //            z-index: -1;
+            //            top: 0px;
+            //            background-color: lightgrey;
+            //            //position: absolute;
+            //        }
+            //    }
+            //}
         }
 
         th, td {
@@ -84,26 +85,12 @@ a-table {
                 position: absolute;
                 visibility: hidden;
                 pointer-events: none;
-                //&.hide-cell{
-                //    display: none;
-                //}
             }
 
             &.a-table-predicted-column {
                 border: none !important;
-                background-color: lightgrey;
-
-                //> span {
-                //    &:before {
-                //        content: '';
-                //        //position: absolute;
-                //        width: inherit;
-                //        height: 100%;
-                //        z-index: -1;
-                //        top: 0px;
-                //        //box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 0, 0.4);
-                //    }
-                //}
+                background-color: transparent;
+                position: relative;
             }
         }
     }
