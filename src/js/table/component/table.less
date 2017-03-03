@@ -81,8 +81,12 @@ a-table {
 
         th, td {
             &.selected-cell {
+                position: absolute;
                 visibility: hidden;
-                display: none;
+                pointer-events: none;
+                //&.hide-cell{
+                //    display: none;
+                //}
             }
 
             &.a-table-predicted-column {

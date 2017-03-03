@@ -37,7 +37,6 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     $onInit() {
         let self: any = this;
-        
         // console.log('this', this)
     }
     
@@ -51,8 +50,7 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     
     onColumnChange($e) {
-        
-        // console.log('onColumnChange', $e)
+        console.log('onColumnChange', $e)
     }
     
     

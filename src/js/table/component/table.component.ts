@@ -19,6 +19,7 @@ class TableCtrl implements ng.IComponentController {
     private thead;
     private tbody;
     private $selectedColumn;
+    private $predictedColumn;
     private $selectedColumnRows: Array<any> = [];
     private headers: Array<any> = [];
     
@@ -31,10 +32,9 @@ class TableCtrl implements ng.IComponentController {
     
     private onUpdate;
     private $postLinkTimeout;
+    private $digestTimeout;
     private $tableTimeout;
     private $aTableMoveBox;
-    // private $aTableSelectedBox;
-    private predictedColumnIndex: any;
     private pColumn;
     private $thCell: any;
     private $tbCell: any;
@@ -55,15 +55,7 @@ class TableCtrl implements ng.IComponentController {
     
     $doCheck() {
         clearTimeout(this.$postLinkTimeout);
-        /*
-         Update the spacer if vertical scroll exist
-         */
         this.postSpacer();
-        //
-        // if (!angular.equals(this.columns, this.$columns)) {
-        //     this.$columns = angular.copy(this.columns);
-        //     // console.log('columns', this.columns)
-        // }
     }
     
     $postLink() {
@@ -131,8 +123,7 @@ class TableCtrl implements ng.IComponentController {
         
         if (this.$selectedColumn)
             this.dropColumn(mEvent).then(()=> {
-                this.$selectedColumn.removeClass('selected-cell');
-                this.removeCellClass();
+                this.SelectedCellClass(false);
                 this.$selectedColumn = null;
             });
         
@@ -143,43 +134,39 @@ class TableCtrl implements ng.IComponentController {
         
     }
     
-    private findParent(ele) {
-        let parent = ele.parentNode;
-        if (parent && parent.nodeName === 'TH') {
-            return parent;
-        } else if (parent) {
-            return this.findParent(parent);
-        }
-    }
     
     private dropColumn(e) {
         let self: any = this;
-        let target: any = self.findParent(e.target) || e.target;
+        let $target: any = this.$predictedColumn;
         let $column = this.$selectedColumn[0];
+        clearTimeout(this.$digestTimeout);
         return new Promise((resolve)=> {
             
             let $e = {
                 fromColumn: $column,
-                toColumn  : target || $column,
+                toColumn  : $target,
                 fromIndex : $column.cellIndex,
-                toIndex   : target.cellIndex,
+                toIndex   : $target.cellIndex,
             };
             if (self.columns) {
-                
-                // let from = angular.copy(self.columns[$e.fromIndex]);
-                //
-                // self.columns.splice($e.toIndex + 1, 0, from);
-                // self.columns.splice($e.fromIndex, 1);
-                //
-                // Object.assign($e, {
-                //     newOrder: self.columns
-                // });
+                let from = angular.copy(self.columns[$e.fromIndex]);
+                //remove it from order
+                self.columns.splice($e.fromIndex, 1);
+                //push to new order
+                self.columns.splice($e.toIndex, 0, from);
+                Object.assign($e, {
+                    columns: self.columns
+                });
             }
-            
             
             self.onUpdate({
                 $event: $e
             });
+            
+            try {
+                (this.$scope as any).$apply();
+            } catch (e) {
+            }
             
             resolve($e);
         })
@@ -211,11 +198,18 @@ class TableCtrl implements ng.IComponentController {
         });
     }
     
-    private removeCellClass() {
+    private SelectedCellClass(bool: boolean, name?: string) {
         
         let cellIndex = (this.$selectedColumn[0] as any).cellIndex;
+        
+        let _class = ['selected-cell'];
+        if (name)_class.push(name + "-cell");
+        
+        this.$selectedColumn[bool ? 'addClass' : 'removeClass'](_class.join(" "));
+        
+        
         this.table.find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (i, cell) {
-            angular.element(cell).removeClass('selected-cell')
+            angular.element(cell)[bool ? 'addClass' : 'removeClass'](_class.join(" "));
         });
     }
     
@@ -249,6 +243,7 @@ class TableCtrl implements ng.IComponentController {
         let self: any = this;
         let MouseEventTimeout: any;
         if (!self.$selectedColumn)return;
+        let $predictedColumn: any;
         
         let totalDistance = 0;
         let lastSeenAt = 0;
@@ -266,7 +261,7 @@ class TableCtrl implements ng.IComponentController {
                 self.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
                 self.$aTableMoveBox.css({
                     width : self.$selectedColumn[0].clientWidth + 'px',
-                    height: self.table[0].clientHeight + 'px',
+                    height: self.table[0].offsetWidth + 'px',
                     left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
                 });
                 
@@ -286,26 +281,7 @@ class TableCtrl implements ng.IComponentController {
                 self.$aTableMoveBox.append(dragTable);
                 self.$element.append(self.$aTableMoveBox);
                 
-            }
-
-            cellIndex = e.target.cellIndex - 1;
-         
-            if (cellIndex > -1 && cellIndex != self.$selectedColumn[0].cellIndex) {
-                // let predictedColumn: any;
-                // let nextSibling: any;
-                console.log('target', cellIndex)
-    
-    
-                //     predictedColumn = self.headers[cellIndex];
-            //     nextSibling = predictedColumn[0].nextElementSibling;
-            //     if (!angular.equals(self.predictedColumnIndex, predictedColumn[0].cellIndex)) {
-            //         self.predictedColumnIndex = predictedColumn[0].cellIndex;
-            //         console.log('predictedColumn',predictedColumn[0] )
-            //         self.insertTableColumn(predictedColumn[0])
-            //     }
-            }
-            
-            if (self.$aTableMoveBox !== null) {
+            } else if (self.$aTableMoveBox !== null) {
                 if (lastSeenAt)totalDistance += e.pageX - lastSeenAt;
                 lastSeenAt = e.pageX;
                 let left = totalDistance + pos.left;
@@ -313,12 +289,30 @@ class TableCtrl implements ng.IComponentController {
                     left: left,
                 });
             }
+            
+            cellIndex = e.target.cellIndex;
+            let predictedColumn: any;
+            // let nextSibling: any;
+            // let previousSibling: any;
+            if (cellIndex > -1) {
+                predictedColumn = self.headers[cellIndex][0];
+                // nextSibling = predictedColumn.nextElementSibling;
+                // previousSibling = predictedColumn.previousElementSibling;
+                if (!angular.equals($predictedColumn, predictedColumn) && !angular.equals(self.$selectedColumn[0], predictedColumn)) {
+                    $predictedColumn = predictedColumn;
+                }
+            } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
+                $predictedColumn = $predictedColumn || self.$selectedColumn[0];
+                self.insertTableColumn(totalDistance > 0 ? true : false, $predictedColumn)
+            }
+            
+            
         })
         
     }
     
     
-    private insertTableColumn(column) {
+    private insertTableColumn(e:boolean, column) {
         let self: any = this;
         
         if (!angular.equals(this.pColumn, column)) {
@@ -327,7 +321,7 @@ class TableCtrl implements ng.IComponentController {
             
             this.pColumn = column;
             let cellPosition = column.cellIndex;
-            let cellWidth = column.innerWidth;
+            let cellWidth = column.offsetWidth;
             let rowCount: string = <string> "" + self.table.find("tr").length;
             
             let thRow = this.thead.find("tr:first-child()");
@@ -360,12 +354,14 @@ class TableCtrl implements ng.IComponentController {
             this.$thCell.appendChild(thSpan);
             this.$tbCell.appendChild(tbSpan);
             
+            this.$predictedColumn = self.headers[e ? cellPosition - 1 : cellPosition][0];
         }
         
     }
     
     $onDestroy() {
         clearTimeout(this.$postLinkTimeout);
+        clearTimeout(this.$digestTimeout);
         clearTimeout(this.$tableTimeout);
         this.RemoveWindowEvent();
     }
