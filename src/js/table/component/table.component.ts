@@ -139,7 +139,7 @@ class TableCtrl implements ng.IComponentController {
         this.pColumn = null;
         this.$thCell = null;
         this.$tbCell = null;
-    
+        
         this.$aPredictedBox.css({
             display: 'none'
         })
@@ -153,30 +153,35 @@ class TableCtrl implements ng.IComponentController {
         let $column = this.$selectedColumn[0];
         clearTimeout(this.$digestTimeout);
         return new Promise((resolve)=> {
-            
-            let $e = {
-                fromColumn: $column,
-                toColumn  : $target,
-                fromIndex : $column.cellIndex,
-                toIndex   : $target.cellIndex,
-            };
-            if (self.columns) {
-                let from = angular.copy(self.columns[$e.fromIndex]);
-                //remove it from order
-                self.columns.splice($e.fromIndex, 1);
-                //push to new order
-                self.columns.splice($e.toIndex, 0, from);
+            let $e: any = {};
+            if ($target) {
                 Object.assign($e, {
-                    columns: self.columns
+                    fromColumn: $column,
+                    toColumn  : $target,
+                    fromIndex : $column.cellIndex,
+                    toIndex   : $target.cellIndex,
                 });
+                
+                
+                if (self.columns) {
+                    let from = angular.copy(self.columns[$e.fromIndex]);
+                    //remove it from order
+                    self.columns.splice($e.fromIndex, 1);
+                    //push to new order
+                    self.columns.splice($e.toIndex, 0, from);
+                    Object.assign($e, {
+                        columns: self.columns
+                    });
+                }
             }
             
             self.onUpdate({
                 $event: $e
             });
             
+            
             try {
-                (this.$scope as any).$apply();
+                (self.$scope as any).$apply();
             } catch (e) {
             }
             

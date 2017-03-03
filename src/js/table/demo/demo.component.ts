@@ -33,18 +33,25 @@ class DemoComponentCtrl implements ng.IComponentController {
                 name: col_name
             });
         }
+        for (let i = 0; i < 100; i++) {
+            let row = {};
+            self.columns.forEach(function (o) {
+                row[o.name] = "row_" + i + " (" + o.name + ")"
+            });
+            
+            self.rows.push(row);
+        }
+        
+        
     }
     
     $onInit() {
         let self: any = this;
-        // console.log('this', this)
+        console.log('this', this)
     }
     
     
     TheHead(e, index) {
-        e.preventDefault();
-        e.stopPropagation();
-        console.clear()
         console.log('TheHead', index)
     }
     

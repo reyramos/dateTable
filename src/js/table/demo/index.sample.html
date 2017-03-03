@@ -14,15 +14,15 @@
             <table>
                 <thead>
                 <tr>
-                    <th ng-repeat="p in $ctrl.columns track by $index">
+                    <th ng-repeat="p in $ctrl.columns">
                         <span><button ng-click="$ctrl.TheHead($event, p)">{{p.name}}</button></span>
                     </th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="row in [] | range:100">
-                    <td ng-repeat="cell in [] | range:10 track by $index">
-                        <span> cell {{$index}}</span>
+                <tr ng-repeat="row in $ctrl.rows">
+                    <td ng-repeat="thead in $ctrl.columns" nowrap>
+                        <span ng-bind="row[thead.name]"></span>
                     </td>
                 </tr>
                 </tbody>
