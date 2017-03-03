@@ -1,8 +1,5 @@
 import * as angular from "angular";
-// require('./jquery-ui.min');
-// require('./anterec');
-// require('dragtable/jquery.dragtable');
-// require('dragtable/dragtable.css');
+
 /**
  * Created by ramor11 on 2/2/2017.
  */
