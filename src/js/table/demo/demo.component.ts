@@ -52,6 +52,8 @@ class DemoComponentCtrl implements ng.IComponentController {
     
     
     TheHead(e, index) {
+        e.preventDefault();
+        e.stopPropagation();
         console.log('TheHead', index)
     }
     

@@ -65,6 +65,10 @@ class TableCtrl implements ng.IComponentController {
     $doCheck() {
         clearTimeout(this.$postLinkTimeout);
         this.postSpacer();
+        
+        if (!angular.equals(this.$columns, this.columns)) {
+            this.$columns = angular.copy(this.columns);
+        }
     }
     
     $postLink() {
@@ -135,6 +139,7 @@ class TableCtrl implements ng.IComponentController {
             this.$selectedColumn = null;
         });
         
+        this.$predictedColumn = null;
         this.$aTableMoveBox = null;
         this.pColumn = null;
         this.$thCell = null;
@@ -174,6 +179,13 @@ class TableCtrl implements ng.IComponentController {
                     });
                 }
             }
+            
+            // console.log('!angular.equals(this.$columns, this.columns)', angular.equals(this.$columns, this.columns))
+    
+            // if (!angular.equals(this.$columns, this.columns)) {
+            //     this.$columns = angular.copy(this.columns);
+            // }
+            
             
             self.onUpdate({
                 $event: $e
