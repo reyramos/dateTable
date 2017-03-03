@@ -11,7 +11,6 @@ a-table {
     align-content: stretch;
     overflow: hidden;
 
-    //.a-table-selected-box,
     .a-table-move-box {
         position: absolute;
         background-color: #ffffff;
@@ -20,6 +19,7 @@ a-table {
 
         > table {
             width: 100%;
+            user-select: none;
             thead,
             tbody {
                 overflow: hidden;
@@ -48,7 +48,6 @@ a-table {
         justify-content: flex-start;
         align-items: stretch;
         align-content: stretch;
-
         thead {
             overflow: hidden;
             cursor: move;
@@ -64,20 +63,6 @@ a-table {
         tbody {
             flex: 1;
             overflow: auto;
-
-            //.a-table-predicted-column{
-            //    > span {
-            //        &:before {
-            //            content: '';
-            //            width: inherit;
-            //            height: 200%;
-            //            z-index: -1;
-            //            top: 0px;
-            //            background-color: lightgrey;
-            //            //position: absolute;
-            //        }
-            //    }
-            //}
         }
 
         th, td {
@@ -93,12 +78,6 @@ a-table {
                 position: relative;
             }
         }
-    }
-
-    table {
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
     }
 }
 

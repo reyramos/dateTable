@@ -188,13 +188,9 @@ class TableCtrl implements ng.IComponentController {
         let self: any = this;
         window.removeEventListener("mouseup", function (e) {
             self.MouseUp(e);
-            console.log('window:mouseup', this)
-            
         });
         window.removeEventListener("touchend", function (e) {
             self.MouseUp(e);
-            console.log('window:touchend', this)
-            
         });
     }
     
