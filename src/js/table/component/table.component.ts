@@ -49,8 +49,6 @@ class TableCtrl implements ng.IComponentController {
             self.thead[0].scrollLeft = this.scrollLeft;
         });
         
-        console.log('draggable', this)
-        
         if (this.reorder) {
             this.$element.append(this.$aPredictedBox);
             this.$aPredictedBox.css({
@@ -82,7 +80,6 @@ class TableCtrl implements ng.IComponentController {
     private AttachEvents() {
         let self: any = this;
         if (!this.reorder)return;
-        
         self.headers = [];
         this.$tableTimeout = setTimeout(()=> {
             self.table.find("th").each(function (hIndex, header) {
@@ -320,12 +317,15 @@ class TableCtrl implements ng.IComponentController {
             
             cellIndex = e.target.cellIndex;
             let predictedColumn: any;
-            if (cellIndex > -1) {
-                predictedColumn = self.headers[cellIndex][0];
-                if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
-            } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-                $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-                self.insertTableColumn(totalDistance > 0 ? true : false, $predictedColumn)
+            try {
+                if (cellIndex > -1) {
+                    predictedColumn = self.headers[cellIndex][0];
+                    if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
+                } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
+                    $predictedColumn = $predictedColumn || self.$selectedColumn[0];
+                    self.insertTableColumn(totalDistance > 0 ? true : false, $predictedColumn)
+                }
+            } catch (e) {
             }
             
             
