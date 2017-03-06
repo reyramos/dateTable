@@ -266,6 +266,17 @@ class TableCtrl implements ng.IComponentController {
         return table;
     };
     
+    private findCell(ele) {
+        if (!ele)return false;
+        
+        if (['TH', 'TD'].indexOf(ele.nodeName) > -1) {
+            return ele;
+        } else {
+            return this.findCell(ele.parentNode);
+        }
+        
+    }
+    
     private selectColumn(cEvent) {
         let self: any = this;
         let MouseEventTimeout: any;
@@ -317,46 +328,28 @@ class TableCtrl implements ng.IComponentController {
                 });
             }
             
-            cellIndex = e.target.cellIndex;
+            cellIndex = (self.findCell(e.target) || e.target).cellIndex;
             let dir = totalDistance < 0 ? 'previous' : totalDistance ? 'next' : false;
             let predictedColumn: any;
             
-            predictedColumn = cellIndex > -1 ? self.headers[cellIndex][0] : self.$selectedColumn[0];
-    
-            console.log('predictedColumn', predictedColumn)
-    
-            // if (!angular.equals(self.$selectedColumn[0], predictedColumn)) {
-            //     $predictedColumn = (dir ? predictedColumn[dir + 'ElementSibling'] : self.$selectedColumn[0]) || null;
-            //     if (!angular.equals($predictedColumn, predictedColumn)) {
-            //         $predictedColumn = predictedColumn;
-            //
-            //         self.insertTableColumn(totalDistance > 0 ? true : false, predictedColumn)
-            //
-            //     }
-            // }else if(angular.equals(self.$selectedColumn[0], predictedColumn)){
-            //     $predictedColumn = self.$selectedColumn[0];
-            //     console.log('same');
-            //
-            //     // self.insertTableColumn(totalDistance > 0 ? true : false, predictedColumn)
-            //
-            // }
-    
-    
-    
-    
-            //
-            // try {
-            //     if (cellIndex > -1) {
-            //         predictedColumn = self.headers[cellIndex][0];
-            //         if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
-            //     } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-            //         $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-            //         console.log('$predictedColumn', $predictedColumn)
-            //         // self.insertTableColumn(totalDistance > 0 ? true : false, $predictedColumn)
-            //     }
-            // } catch (e) {
-            // }
-            //
+            try {
+                if (cellIndex > -1) {
+                    predictedColumn = self.headers[cellIndex][0] || null;
+                    if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
+                } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
+                    $predictedColumn = $predictedColumn || self.$selectedColumn[0];
+                    $predictedColumn = $predictedColumn.cellIndex < 0 ? self.$selectedColumn[0] : $predictedColumn;
+
+
+                    console.log('$predictedColumn', $predictedColumn.cellIndex)
+                    self.insertTableColumn(totalDistance > 0, $predictedColumn)
+                } else {
+                    console.log('other')
+                    self.insertTableColumn(totalDistance > 0, self.$selectedColumn[0])
+                }
+            } catch (e) {
+            }
+            
             
         })
         
@@ -370,7 +363,8 @@ class TableCtrl implements ng.IComponentController {
             if (this.$tbCell)this.$tbCell.remove();
             
             this.pColumn = column;
-            let cellPosition = column.cellIndex; //> -1 ? column.cellIndex : 0;
+            let cellPosition = column.cellIndex; // > -1 ? column.cellIndex : 0;
+            // console.log('cellPosition', cellPosition)
             let cellWidth = column.offsetWidth;
             let rowCount: string = <string> "" + self.table.find("tr").length;
             
@@ -410,9 +404,9 @@ class TableCtrl implements ng.IComponentController {
                 left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
             });
             
-            // let idx = e ? cellPosition - 1 : cellPosition;
-            // let predicted = self.headers[idx > -1 ? idx : 0][0];
-            // self.$predictedColumn = predicted;
+            let idx = e ? cellPosition - 1 : cellPosition;
+            let predicted = self.headers[idx > -1 ? idx : 0][0];
+            self.$predictedColumn = predicted;
         }
         
     }
