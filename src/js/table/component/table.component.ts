@@ -48,7 +48,6 @@ class TableCtrl implements ng.IComponentController {
         let self: any = this;
         
         this.tbody.on('scroll', function (e) {
-            console.log(this.scrollLeft)
             self.thead[0].scrollLeft = this.scrollLeft;
         });
         
@@ -138,24 +137,24 @@ class TableCtrl implements ng.IComponentController {
         let mEvent = e.originalEvent || e;
         this.$element.off("mousemove touchmove");
         
-        // if (this.$thCell)this.$thCell.remove();
-        // if (this.$tbCell)this.$tbCell.remove();
-        // if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
-        //
-        // if (this.$selectedColumn)this.dropColumn(mEvent).then(()=> {
-        //     this.SelectedCellClass(false);
-        //     this.$selectedColumn = null;
-        // });
-        //
-        // this.$predictedColumn = null;
-        // this.$aTableMoveBox = null;
-        // this.pColumn = null;
-        // this.$thCell = null;
-        // this.$tbCell = null;
-        //
-        // this.$aPredictedBox.css({
-        //     display: 'none'
-        // })
+        if (this.$thCell)this.$thCell.remove();
+        if (this.$tbCell)this.$tbCell.remove();
+        if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
+        
+        if (this.$selectedColumn)this.dropColumn(mEvent).then(()=> {
+            this.SelectedCellClass(false);
+            this.$selectedColumn = null;
+        });
+        
+        this.$predictedColumn = null;
+        this.$aTableMoveBox = null;
+        this.pColumn = null;
+        this.$thCell = null;
+        this.$tbCell = null;
+        
+        this.$aPredictedBox.css({
+            display: 'none'
+        })
         
     }
     
@@ -287,7 +286,7 @@ class TableCtrl implements ng.IComponentController {
         let pos = self.getPosition(cEvent);
         
         
-        this.$element.off("mousemove touchmove mouseup touchend").on("mousemove touchmove", function (event) {
+        this.$element.off("mousemove touchmove mouseup touchend").on("mousemove touchmove", (event) => {
             
             if (!self.$selectedColumn)return;
             let e = event.originalEvent || event;
@@ -329,49 +328,20 @@ class TableCtrl implements ng.IComponentController {
                 });
             }
             
-            self.insertTableColumn($predictedColumn);
+            cellIndex = (self.findCell(e.target) || this.$selectedColumn[0]).cellIndex;
             
-            cellIndex = (self.findCell(e.target)).cellIndex;
-            // let dir = totalDistance < 0 ? 'previous' : totalDistance ? 'next' : false;
-            // let predictedColumn: any;
-            // if (cellIndex > -1) {
-            //     predictedColumn = self.headers[cellIndex][0];
-            //     if (!angular.equals($predictedColumn, predictedColumn)) {
-            //         $predictedColumn = predictedColumn;
-            //         // self.insertTableColumn(totalDistance > 0, $predictedColumn)
-            //         // console.log('$predictedColumn', $predictedColumn)
-            //         self.MoveSelectedColumn($predictedColumn)
-            //
-            //     }
-            // } else {
-            //     // self.insertTableColumn(totalDistance > 0, $predictedColumn)
-            // }
-            //
-            
-            
-            // cellIndex = (self.findCell(e.target) || e.target).cellIndex;
-            // let dir = totalDistance < 0 ? 'previous' : totalDistance ? 'next' : false;
-            // let predictedColumn: any;
-            //
-            // try {
-            //     if (cellIndex > -1) {
-            //         predictedColumn = self.headers[cellIndex][0] || null;
-            //         if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
-            //     } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-            //         $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-            //         $predictedColumn = $predictedColumn.cellIndex < 0 ? self.$selectedColumn[0] : $predictedColumn;
-            //
-            //
-            //         console.log('$predictedColumn', $predictedColumn.cellIndex)
-            //         self.insertTableColumn($predictedColumn)
-            //     } else {
-            //         console.log('other')
-            //         self.insertTableColumn(self.$selectedColumn[0])
-            //     }
-            // } catch (e) {
-            // }
-            //
-            
+            let dir = totalDistance < 0 ? 'previous' : totalDistance ? 'next' : false;
+            let predictedColumn: any;
+            predictedColumn = self.headers[cellIndex][0];
+            if (!angular.equals($predictedColumn, predictedColumn)) {
+                $predictedColumn = predictedColumn;
+                // self.insertTableColumn(totalDistance > 0, $predictedColumn)
+                // console.log('$predictedColumn', $predictedColumn)
+                console.log('cellIndex', predictedColumn.cellIndex)
+                
+                // self.MoveSelectedColumn($predictedColumn)
+                
+            }
             
         })
         
@@ -452,13 +422,12 @@ class TableCtrl implements ng.IComponentController {
             this.$thCell.appendChild(thSpan);
             this.$tbCell.appendChild(tbSpan);
             
-            this.$aPredictedBox.css({
-                display: 'block',
-                width  : this.$thCell.offsetWidth + 'px',
-                left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
-            });
+            // this.$aPredictedBox.css({
+            //     display: 'block',
+            //     width  : this.$thCell.offsetWidth + 'px',
+            //     left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
+            // });
             
-            console.log('this.tbody[0].scrollLeft', this.tbody[0].scrollLeft)
             // self.SelectedCellClass(true, 'invisible');
             
             
@@ -497,3 +466,7 @@ export class Table implements ng.IComponentOptions {
         this.controller = TableCtrl;
     }
 }
+
+
+// WEBPACK FOOTER //
+// ./~/angular1-template-loader!./src/js/table/component/table.component.ts
