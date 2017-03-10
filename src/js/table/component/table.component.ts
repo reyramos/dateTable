@@ -144,24 +144,24 @@ class TableCtrl implements ng.IComponentController {
         this.$element.off("mousemove touchmove");
         this.$mousedown = false;
         
-        // if (this.$thCell)this.$thCell.remove();
-        // if (this.$tbCell)this.$tbCell.remove();
-        // if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
-        //
-        // if (this.$selectedColumn)this.dropColumn(mEvent).then(()=> {
-        //     this.SelectedCellClass(false);
-        //     this.$selectedColumn = null;
-        // });
-        //
-        // this.$predictedColumn = null;
-        // this.$aTableMoveBox = null;
-        // this.pColumn = null;
-        // this.$thCell = null;
-        // this.$tbCell = null;
-        //
-        // this.$aPredictedBox.css({
-        //     display: 'none'
-        // })
+        if (this.$thCell)this.$thCell.remove();
+        if (this.$tbCell)this.$tbCell.remove();
+        if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
+        
+        if (this.$selectedColumn)this.dropColumn(mEvent).then(()=> {
+            this.SelectedCellClass(false);
+            this.$selectedColumn = null;
+        });
+        
+        this.$predictedColumn = null;
+        this.$aTableMoveBox = null;
+        this.pColumn = null;
+        this.$thCell = null;
+        this.$tbCell = null;
+        
+        this.$aPredictedBox.css({
+            display: 'none'
+        })
         
     }
     
@@ -170,6 +170,9 @@ class TableCtrl implements ng.IComponentController {
         let self: any = this;
         let $target: any = this.$predictedColumn;
         let $column = this.$selectedColumn[0];
+        if ($target.cellIndex > $column.cellIndex)
+            $target = this.headers[$target.cellIndex - 1][0];
+        
         clearTimeout(this.$digestTimeout);
         return new Promise((resolve)=> {
             let $e: any = {};
@@ -305,7 +308,7 @@ class TableCtrl implements ng.IComponentController {
             e.preventDefault();
             
             let cellIndex = (this.$selectedColumn[0] as any).cellIndex;
-            let dir = $direction || lastSeenAt > e.pageX ? 'previous' : lastSeenAt < e.pageX ? 'next' : false;
+            let dir = $direction || lastSeenAt > e.pageX ? false/*'next'*/ : lastSeenAt < e.pageX ? true/*'previous'*/ : false;
             
             
             if (pos && !this.$aTableMoveBox) {
@@ -343,17 +346,17 @@ class TableCtrl implements ng.IComponentController {
             
             
             cellIndex = e.target.cellIndex;
+            let ele = this.findCell(e.target);
+            
+            
             let predictedColumn: any;
-            try {
-                if (cellIndex > -1) {
-                    predictedColumn = self.headers[cellIndex][0];
-                    if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
-                } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-                    $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-                    console.log('$predictedColumn', $predictedColumn.cellIndex)
-                    self.insertTableColumn($predictedColumn);
-                }
-            } catch (e) {
+            if (cellIndex > -1) {
+                predictedColumn = this.headers[cellIndex][0];
+                if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
+            } else if (!angular.equals(this.$selectedColumn[0], $predictedColumn)) {
+                $predictedColumn = $predictedColumn || this.$selectedColumn[0];
+                this.insertTableColumn($predictedColumn);
+                this.$predictedColumn = $predictedColumn
             }
             
             
@@ -409,12 +412,6 @@ class TableCtrl implements ng.IComponentController {
                 left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
             });
             
-            // self.SelectedCellClass(true, 'invisible');
-            
-            
-            // let idx = e ? cellPosition - 1 : cellPosition;
-            // let predicted = self.headers[idx > -1 ? idx : 0][0];
-            // self.$predictedColumn = predicted;
         }
         
     }
