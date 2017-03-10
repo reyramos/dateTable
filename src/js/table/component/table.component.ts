@@ -115,7 +115,7 @@ class TableCtrl implements ng.IComponentController {
             if (self.$thSpacer)  self.$thSpacer.remove();
             if (offset) {
                 let thRow = self.thead.find("tr:first-child()");
-                self.$thSpacer = thRow[0].insertCell(thRow.children().length);
+                self.$thSpacer = (thRow[0] as any).insertCell(thRow.children().length);
                 self.$thSpacer.setAttribute("class", "eq-thead-spacer");
                 self.$thSpacer.style.width = offset + 'px';
             }
