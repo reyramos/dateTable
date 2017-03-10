@@ -14,7 +14,6 @@ a-table {
     .a-table-move-box {
         position: absolute;
         background-color: #ffffff;
-        pointer-events: none;
         z-index: 2;
 
         > table {
@@ -36,6 +35,10 @@ a-table {
         background-color: lightgrey;
         box-shadow: inset 0px 0px 10px 2px rgba(0, 0, 0, 0.4);
         z-index: -1;
+    }
+
+    [draggable] {
+        user-select: none;
     }
 
     table {
@@ -66,27 +69,9 @@ a-table {
 
         th, td {
             position: relative;
-            //&:not(:last-child)
             &.selected-cell {
-                position: absolute;
                 visibility: hidden;
                 pointer-events: none;
-                //&:before {
-                //    content: '';
-                //    position: absolute;
-                //    width: 100%;
-                //    height: 105%;
-                //    top: 0;
-                //    left: 0;
-                //    background-color: red;
-                //    z-index: 0;
-                //}
-
-                //&.invisible-cell{
-                //    position: absolute;
-                //    visibility: hidden;
-                //    pointer-events: none;
-                //}
             }
 
             &.a-table-predicted-column {
