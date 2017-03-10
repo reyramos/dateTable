@@ -356,6 +356,7 @@ class TableCtrl implements ng.IComponentController {
             } else if (!angular.equals(this.$selectedColumn[0], $predictedColumn)) {
                 $predictedColumn = $predictedColumn || this.$selectedColumn[0];
                 this.insertTableColumn($predictedColumn);
+                console.log('$predictedColumn', $predictedColumn)
                 this.$predictedColumn = $predictedColumn
             }
             
