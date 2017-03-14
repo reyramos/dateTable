@@ -27,7 +27,7 @@ class DemoComponentCtrl implements ng.IComponentController {
         /**
          * Build some fake data
          */
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             let col_name = 'column_' + i;
             self.columns.push({
                 name: col_name

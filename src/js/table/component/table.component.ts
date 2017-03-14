@@ -289,6 +289,7 @@ class TableCtrl implements ng.IComponentController {
         let totalDistance = 0;
         let lastSeenAt = 0;
         let pos = self.getPosition(cEvent);
+        let selectedColumnMaxOutside = this.$selectedColumn[0].offsetLeft + this.$selectedColumn[0].offsetWidth;
         
         
         this.$element.off("mousemove touchmove mouseup touchend", function () {
@@ -338,15 +339,32 @@ class TableCtrl implements ng.IComponentController {
             }
             
             
-            // cellIndex = e.target.cellIndex;
             cellIndex = this.findCell(e.target).cellIndex;
-            let predictedColumn = this.headers[cellIndex][0];
+            let predictedColumn: HTMLTableElement;
             
+            console.log('other', e.pageX)
+            
+            
+            if (!cellIndex) {
+                let x = (left || 0) + this.$selectedColumn[0].offsetLeft;
+                if (x > this.$selectedColumn[0].offsetLeft && x < selectedColumnMaxOutside) {
+                    predictedColumn = this.$selectedColumn[0];
+                }
+            } else {
+                predictedColumn = this.headers[cellIndex][0];
+            }
+            
+            if (!predictedColumn)return;
+            if (angular.equals(predictedColumn, $predictedColumn))return;
+            $predictedColumn = predictedColumn;
+            
+            this.insertTableColumn(predictedColumn);
             // this.$aPredictedBox.css({
             //     display: 'block',
-            //     width  : this.$thCell.offsetWidth + 'px',
-            //     left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
+            //     width  : predictedColumn.offsetWidth + 'px',
+            //     left   : (predictedColumn.offsetLeft - this.tbody[0].scrollLeft) + 'px',
             // });
+            
             
         })
         
