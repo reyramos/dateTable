@@ -71,9 +71,13 @@ a-table {
         th, td {
             position: relative;
             &.selected-cell {
-                position: absolute;
+                //position: absolute;
                 visibility: hidden;
                 pointer-events: none;
+
+                &.last-cell {
+                    border: none;
+                }
             }
 
             &.a-table-predicted-column {
