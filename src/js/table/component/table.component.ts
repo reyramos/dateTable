@@ -346,71 +346,85 @@ class TableCtrl implements ng.IComponentController {
                     left: left,
                 });
             }
-            
-            
-            cellIndex = this.findCell(e.target).cellIndex;
+    
+    
+            cellIndex = e.target.cellIndex;
             let predictedColumn: any;
-            
-            
-            if (!cellIndex) {
-                let x = (left || 0) + this.$selectedColumn[0].offsetLeft;
-                if (x > this.$selectedColumn[0].offsetLeft && x < selectedColumnMaxOutside) {
-                    predictedColumn = this.$selectedColumn[0];
+            try {
+                if (cellIndex > -1) {
+                    predictedColumn = self.headers[cellIndex][0];
+                    if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
+                } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
+                    $predictedColumn = $predictedColumn || self.$selectedColumn[0];
+                    self.insertTableColumn($predictedColumn)
                 }
-            } else {
-                predictedColumn = this.headers[cellIndex][0];
-                
+            } catch (e) {
             }
+    
+    
+            // cellIndex = this.findCell(e.target).cellIndex;
+            // let predictedColumn: any;
             
-            // this.$predictedColumn = predictedColumn
-            
-            if (predictedColumn && !angular.equals(predictedColumn, $predictedColumn)) {
-                $predictedColumn = predictedColumn;
-                // this.insertTableColumn($predictedColumn);
-            }
-            if (predictedColumn) {
-
-                var xPos = left + this.$aTableMoveBox[0].offsetWidth / 2;
-                var x1 = predictedColumn.offsetLeft;
-                var x2 = x1 + predictedColumn.offsetWidth;
-                var x3 = x2 / 2;
-
-                $predictedColumn = {
-                    cellIndex  : predictedColumn.cellIndex,
-                    // cellIndex  : xPos > x3 ? $predictedColumn.cellIndex + 1 : $predictedColumn.cellIndex - 1,
-                    // offsetWidth: this.$aTableMoveBox[0].offsetWidth
-                    offsetWidth: predictedColumn.offsetWidth
-                };
-                //
-                // if($predictedColumn.cellIndex > 0 && !angular.equals($predictedColumnObject, $predictedColumn)){
-                //     $predictedColumnObject = $predictedColumn;
-                // console.log('$predictedColumn:2:', predictedColumn.cellIndex)
-                // this.insertTableColumn($predictedColumn);
-                //
-                // }
-
-            }
-            
-            
-            
-            
-            // try {
-            //     if (cellIndex > -1) {
-            //         predictedColumn = self.headers[cellIndex][0];
-            //         if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
-            //     } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-            //         $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-            //         self.insertTableColumn($predictedColumn)
+            //
+            // if (!cellIndex) {
+            //     let x = (left || 0) + this.$selectedColumn[0].offsetLeft;
+            //     if (x > this.$selectedColumn[0].offsetLeft && x < selectedColumnMaxOutside) {
+            //         predictedColumn = this.$selectedColumn[0];
             //     }
-            // } catch (e) {
+            // } else {
+            //     predictedColumn = this.headers[cellIndex][0];
+            //
             // }
-            // if ($predictedColumn)
-            //     this.$aPredictedBox.css({
-            //         display: 'block',
-            //         width  : $predictedColumn.offsetWidth + 'px',
-            //         left   : ($predictedColumn.offsetLeft - this.tbody[0].scrollLeft) + 'px',
-            //     });
-            // this.insertTableColumn(predictedColumn);
+            //
+            // // this.$predictedColumn = predictedColumn
+            //
+            // if (predictedColumn && !angular.equals(predictedColumn, $predictedColumn)) {
+            //     $predictedColumn = predictedColumn;
+            //     // this.insertTableColumn($predictedColumn);
+            // }
+            // if (predictedColumn) {
+            //
+            //     var xPos = left + this.$aTableMoveBox[0].offsetWidth / 2;
+            //     var x1 = predictedColumn.offsetLeft;
+            //     var x2 = x1 + predictedColumn.offsetWidth;
+            //     var x3 = x2 / 2;
+            //
+            //     $predictedColumn = {
+            //         cellIndex  : predictedColumn.cellIndex,
+            //         // cellIndex  : xPos > x3 ? $predictedColumn.cellIndex + 1 : $predictedColumn.cellIndex - 1,
+            //         // offsetWidth: this.$aTableMoveBox[0].offsetWidth
+            //         offsetWidth: predictedColumn.offsetWidth
+            //     };
+            //     //
+            //     // if($predictedColumn.cellIndex > 0 && !angular.equals($predictedColumnObject, $predictedColumn)){
+            //     //     $predictedColumnObject = $predictedColumn;
+            //     // console.log('$predictedColumn:2:', predictedColumn.cellIndex)
+            //     // this.insertTableColumn($predictedColumn);
+            //     //
+            //     // }
+            //
+            // }
+            //
+            //
+            //
+            //
+            // // try {
+            // //     if (cellIndex > -1) {
+            // //         predictedColumn = self.headers[cellIndex][0];
+            // //         if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
+            // //     } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
+            // //         $predictedColumn = $predictedColumn || self.$selectedColumn[0];
+            // //         self.insertTableColumn($predictedColumn)
+            // //     }
+            // // } catch (e) {
+            // // }
+            // // if ($predictedColumn)
+            // //     this.$aPredictedBox.css({
+            // //         display: 'block',
+            // //         width  : $predictedColumn.offsetWidth + 'px',
+            // //         left   : ($predictedColumn.offsetLeft - this.tbody[0].scrollLeft) + 'px',
+            // //     });
+            // // this.insertTableColumn(predictedColumn);
             
             
         })
