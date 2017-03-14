@@ -286,6 +286,7 @@ class TableCtrl implements ng.IComponentController {
         let self: any = this;
         if (!self.$selectedColumn)return;
         let $predictedColumn: any;
+        let $predictedColumnObject: any;
         let totalDistance = 0;
         let lastSeenAt = 0;
         let pos = self.getPosition(cEvent);
@@ -342,8 +343,6 @@ class TableCtrl implements ng.IComponentController {
             cellIndex = this.findCell(e.target).cellIndex;
             let predictedColumn: HTMLTableElement;
             
-            console.log('other', e.pageX)
-            
             
             if (!cellIndex) {
                 let x = (left || 0) + this.$selectedColumn[0].offsetLeft;
@@ -354,18 +353,40 @@ class TableCtrl implements ng.IComponentController {
                 predictedColumn = this.headers[cellIndex][0];
             }
             
-            if (!predictedColumn)return;
-            if (angular.equals(predictedColumn, $predictedColumn))return;
-            $predictedColumn = predictedColumn;
             
-            this.insertTableColumn(predictedColumn);
+            if (predictedColumn && !angular.equals(predictedColumn, $predictedColumn)) {
+                $predictedColumn = predictedColumn;
+                this.insertTableColumn($predictedColumn);
+    
+            } else if ($predictedColumn) {
+                
+                var xPos = left + this.$aTableMoveBox[0].offsetWidth / 2;
+                var x1 = $predictedColumn.offsetLeft;
+                var x2 = x1 + $predictedColumn.offsetWidth;
+                var x3 = x2 / 2;
+
+                $predictedColumn  = {
+                    cellIndex  : xPos > x3 ? $predictedColumn.cellIndex + 1 : $predictedColumn.cellIndex - 1,
+                    offsetWidth: this.$aTableMoveBox[0].offsetWidth
+                };
+                
+                if($predictedColumn.cellIndex > 0 && !angular.equals($predictedColumnObject, $predictedColumn)){
+                    $predictedColumnObject = $predictedColumn;
+                    console.log('$predictedColumn', left, $predictedColumn.cellIndex)
+                    this.insertTableColumn($predictedColumn);
+    
+                }
+    
+            }
+    
+    
             // this.$aPredictedBox.css({
             //     display: 'block',
             //     width  : predictedColumn.offsetWidth + 'px',
             //     left   : (predictedColumn.offsetLeft - this.tbody[0].scrollLeft) + 'px',
             // });
-            
-            
+    
+    
         })
         
     }
