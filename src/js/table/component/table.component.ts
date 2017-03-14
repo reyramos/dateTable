@@ -450,11 +450,3 @@ export class Table implements ng.IComponentOptions {
         this.controller = TableCtrl;
     }
 }
-
-
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/table/component/table.component.ts
-
-
-// WEBPACK FOOTER //
-// ./~/angular1-template-loader!./src/js/table/component/table.component.ts
