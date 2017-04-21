@@ -7,15 +7,15 @@ import {RouteProvider} from "./routes";
 require("css/styles.less");
 
 export let app: any = angular.module('app', [
-    'ui.router'
+    'rx'
+    , 'ui.router'
     , 'ngSanitize'
     , 'oc.lazyLoad'
     , require('./core').name
 ]);
 
 
-
-app.config(['routeStateProvider', function(states){
+app.config(['routeStateProvider', function (states) {
     return new RouteProvider(states);
 }]);
 
