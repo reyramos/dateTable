@@ -23,7 +23,7 @@ class TableCtrl implements ng.IComponentController {
     private columns;
     private $columns;
     
-
+    
     private $postLinkTimeout;
     private $digestTimeout;
     private $tableTimeout;
@@ -41,7 +41,7 @@ class TableCtrl implements ng.IComponentController {
     
     constructor(private $element, private $scope: ng.IScope) {
         //the table
-        this.table = angular.element($element[0].querySelector("table"));
+        this.table = $element[0].querySelector("table");
         //the head
         this.thead = $element[0].querySelector("table > thead");
         //the body
@@ -83,7 +83,9 @@ class TableCtrl implements ng.IComponentController {
     
     $postLink() {
         this.postSpacer();
-        // this.AttachEvents();
+        if (this.columns) this.$tableTimeout = setTimeout(() => {
+            this.AttachEvents()
+        }, 0);
     }
     
     
@@ -104,8 +106,10 @@ class TableCtrl implements ng.IComponentController {
     }
     
     private AttachEvents() {
-        let self: any = this;
-        // if (!this.reorder)return;
+        
+        let th = this.thead.querySelectorAll('tr')[0].children;
+        console.log(th)
+        
         
         // this.$tableTimeout = setTimeout(()=> {
         //     self.headers = [];
