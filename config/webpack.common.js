@@ -29,7 +29,7 @@ module.exports = {
 	},
 	output: {
 		path: helpers.root("dist"),
-		filename: "/[name].bundle.js"
+		filename: "[name].bundle.js"
 	},
 	stats: {
 		colors: true,
