@@ -11,6 +11,8 @@ a-table {
     align-content: stretch;
     overflow: hidden;
 
+    user-select: none;
+
     .a-table-move-box {
         background-color: #ffffff;
         pointer-events: none;
@@ -59,6 +61,12 @@ a-table {
                 margin: 0;
                 border: none;
                 display: inline-block;
+            }
+
+            th {
+                &.a-row-last.selected-cell {
+                    border: transparent;
+                }
             }
 
         }

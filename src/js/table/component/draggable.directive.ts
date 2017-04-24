@@ -50,7 +50,7 @@ export class Draggable implements ng.IDirective {
         
         
         this.handlerMouseDown = Observable.fromEvent(element, 'mousedown');
-        element[0].addEventListener("mousedown", this.OnHandlerMouseDown);
+        element[0].addEventListener("mousedown", () => this.OnHandlerMouseDown);
         
         let mouseDragEvent = this.handlerMouseDown
             .map(event => {
@@ -90,6 +90,7 @@ export class Draggable implements ng.IDirective {
         //broadcast when the mouse up is trigger
         this.docMouseUp.subscribe({
             next: (e) => {
+                this.OnHandlerMouseDown(e);
                 ctrl.onMouseComplete.apply(ctrl, [e]);
             }
         });
@@ -105,7 +106,8 @@ export class Draggable implements ng.IDirective {
         scope.$on('$destroy', () => {
             if (this.MouseDrag) this.MouseDrag.unsubscribe();
             if (this.docMouseUp) this.docMouseUp.unsubscribe();
-            element[0].removeEventListener("mousedown", this.OnHandlerMouseDown);
+            element[0].removeEventListener("mousedown", () => this.OnHandlerMouseDown);
+            
         })
         
     };

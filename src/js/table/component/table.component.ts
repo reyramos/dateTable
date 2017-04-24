@@ -79,17 +79,16 @@ class TableCtrl implements ng.IComponentController, IController {
     //INPUT
     onMouseDrag(e) {
         let ui = e.ui;
-        let jE = ui.element;
         
-        let pos = this.getPosition(jE);
-        let cellIndex = jE[0].cellIndex;
+        let pos = this.getPosition(ui.element);
+        let cellIndex = ui.element[0].cellIndex;
         
-        this.$selectedColumn = jE;
+        this.$selectedColumn = ui.element;
         
         if (pos && !this.$aTableMoveBox) {
-            this.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
+            this.$aTableMoveBox = angular.element('<div class="a-table-move-box"></div>');
             this.$aTableMoveBox.css({
-                width : jE[0].clientWidth + 'px',
+                width : ui.element[0].clientWidth + 'px',
                 height: this.table.offsetWidth + 'px',
                 left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
             });
@@ -111,7 +110,7 @@ class TableCtrl implements ng.IComponentController, IController {
             
         } else if (this.$aTableMoveBox !== null) {
             this.$aTableMoveBox.css({
-                left: pos.left + ui.left,
+                left: (pos.left + ui.left) + 'px'
             });
         }
     }
@@ -119,6 +118,11 @@ class TableCtrl implements ng.IComponentController, IController {
     onMouseComplete(e) {
         if (!this.isDragging)return;
         if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
+        
+        this.SelectedCellClass(false);
+        
+        
+        this.$selectedColumn = null;
         this.$aTableMoveBox = null;
         this.isDragging = false;
     }
@@ -127,12 +131,13 @@ class TableCtrl implements ng.IComponentController, IController {
     $doCheck() {
         clearTimeout(this.$postLinkTimeout);
         this.postSpacer();
-        
-        // if (this.reorder && !angular.equals(this.$columns, this.columns)) {
-        //     this.$columns = angular.copy(this.columns);
-        //     this.RemoveWindowEvent();
-        //     this.AttachEvents();
+        // if (!angular.equals(this.$columns, this.columns)) {
+        //     this.$columns = this.columns;
+        //     this.postSpacer();
         //
+        //     //     this.RemoveWindowEvent();
+        //     //     this.AttachEvents();
+        //     //
         // }
     }
     
@@ -150,16 +155,23 @@ class TableCtrl implements ng.IComponentController, IController {
      * This is a spacer to place for the vertical bar width onto the hearder
      */
     private postSpacer() {
-        this.$postLinkTimeout = setTimeout(() => {
-            let offset = this.thead.clientWidth - this.tbody.clientWidth;
-            if (this.$thSpacer) this.$thSpacer.remove();
-            if (offset) {
-                let thRow = this.thead.getElementsByTagName("tr")[0];
-                this.$thSpacer = (thRow as any).insertCell(thRow.children.length);
-                this.$thSpacer.setAttribute("class", "eq-thead-spacer");
-                this.$thSpacer.style.width = offset + 'px';
-            }
-        }, 0);
+        // this.$postLinkTimeout = setTimeout(() => {
+        let thRow = this.thead.getElementsByTagName("tr")[0];
+        let lastChild = thRow.children[thRow.children.length - 1];
+    
+        let offset = this.thead.clientWidth - this.tbody.clientWidth;
+        if (this.$thSpacer){
+            this.$thSpacer.remove();
+            lastChild.className.replace(/a-row-last/g, '');
+        }
+        if (offset) {
+            lastChild.className += " a-row-last";
+            
+            this.$thSpacer = (thRow as any).insertCell(thRow.children.length);
+            this.$thSpacer.setAttribute("class", "eq-thead-spacer");
+            this.$thSpacer.style.width = offset + 'px';
+        }
+        // }, 0);
     }
     
     
@@ -176,41 +188,6 @@ class TableCtrl implements ng.IComponentController, IController {
             rL = rect.left + window.pageXOffset - pT.left;
         
         return {top: rT, left: rL};
-    }
-    
-    
-    // // private get LayoutElement(): HTMLElement {
-    // //     return this.$element;
-    // // }
-    // //
-    // //collect the move distance total no from pageX or pageY
-    // private totalDistanceX = 0;
-    // private totalDistanceY = 0;
-    // private lastSeenAtX = 0;
-    // private lastSeenAtY = 0;
-    
-    private AttachEvents() {
-        console.log('AttachEvents')
-        
-        // this.$tableTimeout = setTimeout(()=> {
-        //     self.headers = [];
-        //
-        //     self.table.find("th").each(function (hIndex, header) {
-        //         let head = angular.element(header);
-        //         head.css({cursor: 'move'});
-        //         self.headers.push(head);
-        //         head.off("mousedown touchstart mouseup touchend dragover").on("mousedown touchstart", function (e) {
-        //             e.preventDefault();
-        //             self.$selectedColumn = angular.element(this);
-        //             self.selectColumn(this);
-        //         }).on("mouseup touchend", function (e) {
-        //             self.MouseUp(e)
-        //         }).on("dragover", function (e) {
-        //             console.log('dragover', e.target)
-        //         })
-        //     });
-        //     self.AddWindowEvent();
-        // }, 0);
     }
     
     
@@ -291,45 +268,22 @@ class TableCtrl implements ng.IComponentController, IController {
     //         resolve($e);
     //     })
     // }
-    //
-    // private RemoveWindowEvent() {
-    //     let self: any = this;
-    //     window.removeEventListener("mouseup", function (e) {
-    //         self.MouseUp(e);
-    //     });
-    //     window.removeEventListener("touchend", function (e) {
-    //         self.MouseUp(e);
-    //     });
-    // }
-    //
-    // private AddWindowEvent() {
-    //     let self: any = this;
-    //     window.addEventListener("mouseup", function (e) {
-    //         self.MouseUp(e);
-    //         self.RemoveWindowEvent();
-    //     });
-    //     window.addEventListener("touchend", function (e) {
-    //         self.MouseUp(e);
-    //         self.RemoveWindowEvent();
-    //     });
-    // }
-    //
-    // private SelectedCellClass(bool: boolean, name?: string) {
-    //
-    //     let cellIndex = (this.$selectedColumn[0] as any).cellIndex;
-    //
-    //     let _class = name ? [] : ['selected-cell', 'last-cell'];
-    //     if (name) _class.push(name + "-cell");
-    //
-    //     this.$selectedColumn[bool ? 'addClass' : 'removeClass'](_class.join(" "));
-    //     this.table.find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (i, cell) {
-    //         angular.element(cell)[bool ? 'addClass' : 'removeClass'](_class.join(" "));
-    //     });
-    // }
+    
+    
+    private SelectedCellClass(bool: boolean, name?: string) {
+        
+        let cellIndex = (this.$selectedColumn[0] as any).cellIndex;
+        
+        let _class = name ? [] : ['selected-cell', 'last-cell'];
+        if (name) _class.push(name + "-cell");
+        
+        this.$selectedColumn[bool ? 'addClass' : 'removeClass'](_class.join(" "));
+        angular.element(this.table).find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (i, cell) {
+            angular.element(cell)[bool ? 'addClass' : 'removeClass'](_class.join(" "));
+        });
+    }
     
     private createDraggableTable = function () {
-        let self: any = this;
-        
         let table = angular.element("<table/>");
         let thead = angular.element("<thead/>");
         let tbody = angular.element("<tbody/>");
@@ -353,214 +307,6 @@ class TableCtrl implements ng.IComponentController, IController {
         return table;
     };
     
-    // private findCell(ele) {
-    //     if (!ele)return false;
-    //
-    //     if (['TH', 'TD'].indexOf(ele.nodeName) > -1) {
-    //         return ele;
-    //     } else {
-    //         return this.findCell(ele.parentNode);
-    //     }
-    //
-    // }
-    
-    // private selectColumn(cEvent) {
-    //     let self: any = this;
-    //     if (!self.$selectedColumn)return;
-    //     let $predictedColumn: any;
-    //     let $predictedColumnObject: any;
-    //     let totalDistance = 0;
-    //     let lastSeenAt = 0;
-    //     let pos = self.getPosition(cEvent);
-    //     let selectedColumnMaxOutside = this.$selectedColumn[0].offsetLeft + this.$selectedColumn[0].offsetWidth;
-    //
-    //
-    //     this.$element.off("mousemove touchmove mouseup touchend", function () {
-    //         $predictedColumn = null;
-    //     }).on("mousemove touchmove", (event) => {
-    //
-    //         this.$mousedown = true;
-    //
-    //         if (!this.$selectedColumn)return;
-    //         let e = event.originalEvent || event;
-    //         e.preventDefault();
-    //
-    //         let cellIndex = (this.$selectedColumn[0] as any).cellIndex;
-    //         let left;
-    //
-    //         if (pos && !this.$aTableMoveBox) {
-    //             this.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable="true"></div>');
-    //             this.$aTableMoveBox.css({
-    //                 width : this.$selectedColumn[0].clientWidth + 'px',
-    //                 height: this.table[0].offsetWidth + 'px',
-    //                 left  : (pos.left + (cellIndex ? 1 : 0)) + 'px'
-    //             });
-    //
-    //             let dragTable = this.createDraggableTable();
-    //             dragTable.addClass('draggable');
-    //             let cellPos = cellIndex + 1;
-    //
-    //             if (cellPos === self.headers.length) this.$selectedColumn.addClass("last-cell")
-    //             self.table.find("tr td:nth-child(" + cellPos + ")").each(function (cellIndex, cell) {
-    //                 self.$selectedColumnRows.push(cell);
-    //                 let tr = angular.element("<tr/>");
-    //                 let td = angular.element("<td/>");
-    //                 cell.classList += " selected-cell" + (cellPos === self.headers.length ? " last-cell" : "");
-    //
-    //
-    //                 td.html(cell.innerHTML);
-    //                 tr.append(td);
-    //                 dragTable.find("tbody").append(tr);
-    //             });
-    //
-    //             self.$aTableMoveBox.append(dragTable);
-    //             self.$element.append(self.$aTableMoveBox);
-    //
-    //         } else if (self.$aTableMoveBox !== null) {
-    //             if (lastSeenAt) totalDistance += e.pageX - lastSeenAt;
-    //             lastSeenAt = e.pageX;
-    //             left = totalDistance + pos.left;
-    //             self.$aTableMoveBox.css({
-    //                 left: left,
-    //             });
-    //         }
-    //
-    //
-    //         cellIndex = e.target.cellIndex;
-    //         let predictedColumn: any;
-    //         try {
-    //             if (cellIndex > -1) {
-    //                 predictedColumn = self.headers[cellIndex][0];
-    //                 if (!angular.equals($predictedColumn, predictedColumn)) $predictedColumn = predictedColumn;
-    //             } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-    //                 $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-    //                 self.insertTableColumn($predictedColumn)
-    //             }
-    //         } catch (e) {
-    //         }
-    //
-    //
-    //         // cellIndex = this.findCell(e.target).cellIndex;
-    //         // let predictedColumn: any;
-    //
-    //         //
-    //         // if (!cellIndex) {
-    //         //     let x = (left || 0) + this.$selectedColumn[0].offsetLeft;
-    //         //     if (x > this.$selectedColumn[0].offsetLeft && x < selectedColumnMaxOutside) {
-    //         //         predictedColumn = this.$selectedColumn[0];
-    //         //     }
-    //         // } else {
-    //         //     predictedColumn = this.headers[cellIndex][0];
-    //         //
-    //         // }
-    //         //
-    //         // // this.$predictedColumn = predictedColumn
-    //         //
-    //         // if (predictedColumn && !angular.equals(predictedColumn, $predictedColumn)) {
-    //         //     $predictedColumn = predictedColumn;
-    //         //     // this.insertTableColumn($predictedColumn);
-    //         // }
-    //         // if (predictedColumn) {
-    //         //
-    //         //     var xPos = left + this.$aTableMoveBox[0].offsetWidth / 2;
-    //         //     var x1 = predictedColumn.offsetLeft;
-    //         //     var x2 = x1 + predictedColumn.offsetWidth;
-    //         //     var x3 = x2 / 2;
-    //         //
-    //         //     $predictedColumn = {
-    //         //         cellIndex  : predictedColumn.cellIndex,
-    //         //         // cellIndex  : xPos > x3 ? $predictedColumn.cellIndex + 1 : $predictedColumn.cellIndex - 1,
-    //         //         // offsetWidth: this.$aTableMoveBox[0].offsetWidth
-    //         //         offsetWidth: predictedColumn.offsetWidth
-    //         //     };
-    //         //     //
-    //         //     // if($predictedColumn.cellIndex > 0 && !angular.equals($predictedColumnObject, $predictedColumn)){
-    //         //     //     $predictedColumnObject = $predictedColumn;
-    //         //     // console.log('$predictedColumn:2:', predictedColumn.cellIndex)
-    //         //     // this.insertTableColumn($predictedColumn);
-    //         //     //
-    //         //     // }
-    //         //
-    //         // }
-    //         //
-    //         //
-    //         //
-    //         //
-    //         // // try {
-    //         // //     if (cellIndex > -1) {
-    //         // //         predictedColumn = self.headers[cellIndex][0];
-    //         // //         if (!angular.equals($predictedColumn, predictedColumn))$predictedColumn = predictedColumn;
-    //         // //     } else if (!angular.equals(self.$selectedColumn[0], $predictedColumn)) {
-    //         // //         $predictedColumn = $predictedColumn || self.$selectedColumn[0];
-    //         // //         self.insertTableColumn($predictedColumn)
-    //         // //     }
-    //         // // } catch (e) {
-    //         // // }
-    //         // // if ($predictedColumn)
-    //         // //     this.$aPredictedBox.css({
-    //         // //         display: 'block',
-    //         // //         width  : $predictedColumn.offsetWidth + 'px',
-    //         // //         left   : ($predictedColumn.offsetLeft - this.tbody[0].scrollLeft) + 'px',
-    //         // //     });
-    //         // // this.insertTableColumn(predictedColumn);
-    //
-    //
-    //     })
-    //
-    // }
-    //
-    //
-    // private insertTableColumn(column) {
-    //     let self: any = this;
-    //
-    //     if (!angular.equals(this.pColumn, column)) {
-    //         if (this.$thCell) this.$thCell.remove();
-    //         if (this.$tbCell) this.$tbCell.remove();
-    //
-    //         this.pColumn = column;
-    //         let cellPosition = column.cellIndex;
-    //         let cellWidth = column.offsetWidth;
-    //         let rowCount: string = <string> "" + self.table.find("tr").length;
-    //
-    //         let thRow = this.thead.find("tr:first-child()");
-    //         let tbRow = this.tbody.find("tr:first-child()");
-    //
-    //         this.$thCell = thRow[0].insertCell(cellPosition);
-    //         this.$thCell.setAttribute("class", "a-table-predicted-column");
-    //         this.$thCell.style.width = cellWidth + 'px';
-    //         this.$thCell.style.padding = '0px';
-    //         this.$thCell.style.margin = '0px';
-    //
-    //
-    //         this.$tbCell = tbRow[0].insertCell(cellPosition);
-    //         this.$tbCell.setAttribute("class", "a-table-predicted-column");
-    //         this.$tbCell.rowSpan = rowCount;
-    //         this.$tbCell.style.width = cellWidth + 'px';
-    //         this.$tbCell.style.padding = '0px';
-    //         this.$tbCell.style.margin = '0px';
-    //
-    //         //create a span with no styles, since it will be the filler to set the width of the cell
-    //         let thSpan = document.createElement("span");
-    //         thSpan.setAttribute("class", "a-table-predicted-column");
-    //         thSpan.style.padding = "0px";
-    //         thSpan.style.margin = "0px";
-    //         thSpan.style.width = cellWidth + 'px';
-    //
-    //         //copy for the tbody
-    //         let tbSpan = thSpan.cloneNode(true);
-    //
-    //         this.$thCell.appendChild(thSpan);
-    //         this.$tbCell.appendChild(tbSpan);
-    //
-    //         this.$aPredictedBox.css({
-    //             display: 'block',
-    //             width  : this.$thCell.offsetWidth + 'px',
-    //             left   : (this.$thCell.offsetLeft - this.tbody[0].scrollLeft) + 'px',
-    //         });
-    //
-    //     }
-    //
-    // }
     
     $onDestroy() {
         // clearTimeout(this.$postLinkTimeout);
