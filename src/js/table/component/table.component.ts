@@ -89,14 +89,20 @@ class TableCtrl implements ng.IComponentController, IController {
     
     //INPUT
     onMouseDrag(e) {
+        if (!this.columns)return;
+        
+        
         let ui = e.ui;
         
         let pos = this.getPosition(ui.element);
         let cellIndex = ui.element[0].cellIndex;
+        let dir = e.event.movementX > 0;
+        // let offset = pos.left + ui.left + (dir ? ui.element[0].clientWidth : 0);
+        // let predictedColumn = this.columns[dir ? cellIndex + 1 : cellIndex - 1] || false;
         
         this.$selectedColumn = ui.element;
         // console.log(this.findCell(e.event.target).cellIndex || cellIndex);
-        
+        console.log(dir);
         
         if (pos && !this.$aTableMoveBox) {
             this.$aTableMoveBox = angular.element('<div class="a-table-move-box"></div>');

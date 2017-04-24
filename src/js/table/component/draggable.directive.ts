@@ -28,6 +28,7 @@ export class Draggable implements ng.IDirective {
     
     
     //collect the move distance total no from pageX or pageY
+    // private onMouseDown: boolean = false;
     private totalDistanceX = 0;
     private totalDistanceY = 0;
     private lastSeenAtX = 0;
@@ -39,6 +40,7 @@ export class Draggable implements ng.IDirective {
     }
     
     private OnHandlerMouseDown(event: MouseEvent) {
+        // this.onMouseDown = true;
         this.totalDistanceX = 0;
         this.totalDistanceY = 0;
         this.lastSeenAtX = 0;
@@ -47,14 +49,13 @@ export class Draggable implements ng.IDirective {
     
     link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl: IController) => {
         this.aTable = ctrl;
-        
+        let self = this;
         
         this.handlerMouseDown = Observable.fromEvent(element, 'mousedown');
         
         
         // element[0].addEventListener("mouseover", function (e) {
-        //     if (ctrl.isDragging)return;
-        //     console.log('onMouseOver', this)
+        //         console.log('onMouseOver', this)
         // });
         //
         
