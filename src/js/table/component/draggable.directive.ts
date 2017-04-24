@@ -20,13 +20,12 @@ export class Draggable implements ng.IDirective {
     restrict = 'A';
     require = '?^aTable';
     
+    private aTable: IController;
     private handlerMouseDown;
     private docMouseMove;
     private docMouseUp;
     private MouseDrag: Subscription;
     
-    
-    private isDragging: Boolean = false;
     
     //collect the move distance total no from pageX or pageY
     private totalDistanceX = 0;
@@ -34,18 +33,12 @@ export class Draggable implements ng.IDirective {
     private lastSeenAtX = 0;
     private lastSeenAtY = 0;
     
-    
-    private OnMouseUp() {
-    
-    }
-    
     constructor() {
         this.docMouseMove = Observable.fromEvent(document, 'mousemove');
         this.docMouseUp = Observable.fromEvent(document, 'mouseup');
     }
     
     private OnHandlerMouseDown(event: MouseEvent) {
-        this.isDragging = false;
         this.totalDistanceX = 0;
         this.totalDistanceY = 0;
         this.lastSeenAtX = 0;
@@ -53,6 +46,9 @@ export class Draggable implements ng.IDirective {
     };
     
     link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl: IController) => {
+        this.aTable = ctrl;
+        
+        
         this.handlerMouseDown = Observable.fromEvent(element, 'mousedown');
         element[0].addEventListener("mousedown", this.OnHandlerMouseDown);
         
@@ -63,7 +59,7 @@ export class Draggable implements ng.IDirective {
             })
             .flatMap(
                 offset => this.docMouseMove.map(event => {
-                    this.isDragging = true;
+                    this.aTable.isDragging = true;
                     
                     if (this.lastSeenAtX) this.totalDistanceX += event.pageX - this.lastSeenAtX;
                     this.lastSeenAtX = event.pageX;
@@ -84,12 +80,16 @@ export class Draggable implements ng.IDirective {
         
         
         this.MouseDrag = mouseDragEvent.subscribe({
-            next: ctrl.onMouseDrag
+            next: (e) => {
+                ctrl.onMouseDrag.apply(ctrl, [e]);
+            }
         });
         
-        
+        //broadcast when the mouse up is trigger
         this.docMouseUp.subscribe({
-            next: ctrl.onMouseComplete
+            next: (e) => {
+                ctrl.onMouseComplete.apply(ctrl, [e]);
+            }
         });
         
         function getRect() {

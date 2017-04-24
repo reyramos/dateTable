@@ -15,7 +15,7 @@ export let app: any = angular.module('app', [
     , require('./core').name
 ]);
 
-app.directive('draggable', Draggable.factory());
+app.directive('aDraggable', Draggable.factory());
 
 app.config(['routeStateProvider', function (states) {
     return new RouteProvider(states);
