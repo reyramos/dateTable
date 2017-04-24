@@ -86,7 +86,6 @@ class TableCtrl implements ng.IComponentController, IController {
         
         this.$selectedColumn = jE;
         
-        
         if (pos && !this.$aTableMoveBox) {
             this.$aTableMoveBox = angular.element('<div class="a-table-move-box" draggable=""></div>');
             this.$aTableMoveBox.css({
@@ -112,7 +111,7 @@ class TableCtrl implements ng.IComponentController, IController {
             
         } else if (this.$aTableMoveBox !== null) {
             this.$aTableMoveBox.css({
-                left: ui.left,
+                left: pos.left + ui.left,
             });
         }
     }
@@ -120,11 +119,6 @@ class TableCtrl implements ng.IComponentController, IController {
     onMouseComplete(e) {
         if (!this.isDragging)return;
         if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
-        // if (this.$selectedColumn)this.dropColumn(mEvent).then(()=> {
-        //     this.SelectedCellClass(false);
-        //     this.$selectedColumn = null;
-        // });
-        
         this.$aTableMoveBox = null;
         this.isDragging = false;
     }

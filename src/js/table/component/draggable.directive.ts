@@ -69,9 +69,11 @@ export class Draggable implements ng.IDirective {
                     
                     return {
                         ui   : {
-                            top    : this.totalDistanceY,
-                            left   : this.totalDistanceX,
-                            element: element
+                            top        : this.totalDistanceY,
+                            left       : this.totalDistanceX,
+                            lastSeenAtX: this.lastSeenAtX,
+                            lastSeenAtY: this.lastSeenAtY,
+                            element    : element
                         },
                         event: event
                     }
