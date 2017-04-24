@@ -76,6 +76,17 @@ class TableCtrl implements ng.IComponentController, IController {
         }
     }
     
+    private findCell(ele) {
+        if (!ele)return false;
+        
+        if (['TH', 'TD'].indexOf(ele.nodeName) > -1) {
+            return ele;
+        } else {
+            return this.findCell(ele.parentNode);
+        }
+        
+    }
+    
     //INPUT
     onMouseDrag(e) {
         let ui = e.ui;
@@ -84,6 +95,8 @@ class TableCtrl implements ng.IComponentController, IController {
         let cellIndex = ui.element[0].cellIndex;
         
         this.$selectedColumn = ui.element;
+        // console.log(this.findCell(e.event.target).cellIndex || cellIndex);
+        
         
         if (pos && !this.$aTableMoveBox) {
             this.$aTableMoveBox = angular.element('<div class="a-table-move-box"></div>');
@@ -158,9 +171,9 @@ class TableCtrl implements ng.IComponentController, IController {
         // this.$postLinkTimeout = setTimeout(() => {
         let thRow = this.thead.getElementsByTagName("tr")[0];
         let lastChild = thRow.children[thRow.children.length - 1];
-    
+        
         let offset = this.thead.clientWidth - this.tbody.clientWidth;
-        if (this.$thSpacer){
+        if (this.$thSpacer) {
             this.$thSpacer.remove();
             lastChild.className.replace(/a-row-last/g, '');
         }

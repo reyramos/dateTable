@@ -18,7 +18,7 @@ export interface IController {
 
 export class Draggable implements ng.IDirective {
     restrict = 'A';
-    require = '?^aTable';
+    require = '^aTable';
     
     private aTable: IController;
     private handlerMouseDown;
@@ -50,6 +50,14 @@ export class Draggable implements ng.IDirective {
         
         
         this.handlerMouseDown = Observable.fromEvent(element, 'mousedown');
+        
+        
+        // element[0].addEventListener("mouseover", function (e) {
+        //     if (ctrl.isDragging)return;
+        //     console.log('onMouseOver', this)
+        // });
+        //
+        
         element[0].addEventListener("mousedown", () => this.OnHandlerMouseDown);
         
         let mouseDragEvent = this.handlerMouseDown
