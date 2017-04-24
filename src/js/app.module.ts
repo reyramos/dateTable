@@ -3,6 +3,7 @@
 
 import * as angular from "angular";
 import {RouteProvider} from "./routes";
+import {Draggable} from "./table/component/draggable.directive";
 
 require("css/styles.less");
 
@@ -14,6 +15,7 @@ export let app: any = angular.module('app', [
     , require('./core').name
 ]);
 
+app.directive('draggable', Draggable.factory());
 
 app.config(['routeStateProvider', function (states) {
     return new RouteProvider(states);

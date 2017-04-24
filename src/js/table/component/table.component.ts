@@ -3,6 +3,7 @@ import * as angular from "angular";
 import 'rxjs/Rx';
 import {Subscription} from 'rxjs/Subscription';
 import {Subject} from "rxjs";
+import {Observable} from "rxjs/Observable";
 
 /**
  * Created by ramor11 on 2/2/2017.
@@ -10,13 +11,12 @@ import {Subject} from "rxjs";
 
 declare let window: any;
 declare let $: any;
-declare let Rx: any;
 
 class TableCtrl implements ng.IComponentController {
-
-
+    
+    
     static $inject: Array<string> = ['$element', '$scope'];
-
+    
     private table;
     private thead;
     private tbody;
@@ -24,36 +24,29 @@ class TableCtrl implements ng.IComponentController {
     private $selectedColumnRows = [];
     private $predictedColumn;
     private headers: Array<any> = [];
-
+    
     private columns;
     private $columns;
-
-
+    
+    
     private $postLinkTimeout;
     private $digestTimeout;
     private $tableTimeout;
     private $aPredictedBox;
     private $thSpacer: any;
-
-
-    private onUpdate;
-    private $mousedown: boolean = false;
-    private $mousemove: boolean = false;
-    private $aTableMoveBox;
-    private pColumn;
-    private $thCell: any;
-    private $tbCell: any;
-
-
-    private MouseDrag: Subscription;
+    
+    
+    // private onUpdate;
+    // private $mousedown: boolean = false;
+    // private $mousemove: boolean = false;
+    // private $aTableMoveBox;
+    // private pColumn;
+    // private $thCell: any;
+    // private $tbCell: any;
+    
     private isDragging: boolean = false;
-    private handlerMouseDown;
-    private docMouseMove;
-    private docMouseUp;
-
-    OnHandlerMouseDown?(event: Event): void;
-
-
+    
+   
     constructor(private $element, private $scope: ng.IScope) {
         //the table
         this.table = $element[0].querySelector("table");
@@ -61,25 +54,20 @@ class TableCtrl implements ng.IComponentController {
         this.thead = $element[0].querySelector("table > thead");
         //the body
         this.tbody = $element[0].querySelector("table > tbody");
-
+        
+        //BOX THAT DISPLAYS THE PREDICTED MOVE
         this.$aPredictedBox = document.createElement("div");
         this.$aPredictedBox.className = "a-table-predicted-box";
         this.$aPredictedBox.setAttribute("draggable", "");
-
-
-        this.handlerMouseDown = new Subject();
-        this.docMouseMove = new Subject();
-        this.docMouseUp = new Subject();
-
     }
-
-
+    
+    
     $onInit() {
         /**
          * Define event on tbody scroll
          */
         this.tbody.addEventListener('scroll', (e) => this.thead.scrollLeft = e.target.scrollLeft);
-
+        
         /**
          * If model columns is added, then well looking into reorder the columns
          * append the predicted box that will define the moving column
@@ -87,27 +75,24 @@ class TableCtrl implements ng.IComponentController {
         if (this.columns) {
             this.$element.append(this.$aPredictedBox);
             this.$aPredictedBox.style.display = "none";
-
-            document.addEventListener("mousemove", this.onMousemove);
-            document.addEventListener("mouseup", this.onMouseup);
-
         }
     }
-
-    onMousemove(event: MouseEvent) {
-        console.log('onMousemove')
-        this.docMouseMove.next(event);
+    
+    //INPUT
+    onMouseDrag(e) {
+        let pos = e.ui;
+        let jE = pos.element;
+        
+        // console.log('onMouseDrag', jE[0].cellIndex)
+        console.log('pos', pos)
     }
-
-    onMouseup(event: MouseEvent) {
-        if (this.isDragging) {
-            this.isDragging = false;
-        }
-
-        console.log('onMouseup')
-        this.docMouseUp.next(event);
+    
+    onMouseComplete(e){
+        console.log('mouseup', e)
+    
     }
-
+    
+    
     $doCheck() {
         clearTimeout(this.$postLinkTimeout);
         this.postSpacer();
@@ -119,16 +104,17 @@ class TableCtrl implements ng.IComponentController {
         //
         // }
     }
-
+    
     $postLink() {
         this.postSpacer();
-        if (this.columns) this.$tableTimeout = setTimeout(() => {
-            this.AttachEvents()
-            this.CreateDrag();
-        }, 0);
+        //waiting for the digest to complete;
+        // if (this.columns) this.$tableTimeout = setTimeout(() => {
+        //     // this.AttachEvents()
+        //     // this.CreateDrag();
+        // }, 0);
     }
-
-
+    
+    
     /**
      * This is a spacer to place for the vertical bar width onto the hearder
      */
@@ -144,8 +130,8 @@ class TableCtrl implements ng.IComponentController {
             }
         }, 0);
     }
-
-
+    
+    
     private getPosition(ele) {
         let rect = null;
         let pT = null;
@@ -154,45 +140,27 @@ class TableCtrl implements ng.IComponentController {
             pT = (this.$element[0] || this.$element).getBoundingClientRect();
         } catch (e) {
         }
-
+        
         var rT = rect.top + window.pageYOffset - pT.top,
             rL = rect.left + window.pageXOffset - pT.left;
-
+        
         return {top: rT, left: rL};
     }
-
-
-    private get LayoutElement(): HTMLElement {
-        return this.$element;
-    }
-
-    private totalDistanceX = 0;
-    private lastSeenAtX = 0;
-    private curX = 0;
-
+    
+    
+    // // private get LayoutElement(): HTMLElement {
+    // //     return this.$element;
+    // // }
+    // //
+    // //collect the move distance total no from pageX or pageY
+    // private totalDistanceX = 0;
+    // private totalDistanceY = 0;
+    // private lastSeenAtX = 0;
+    // private lastSeenAtY = 0;
+    
     private AttachEvents() {
-        let self = this;
-
-        let th = this.thead.querySelectorAll('tr')[0].children;
-        self.OnHandlerMouseDown = (ele) => {
-
-            let pos = this.getPosition(ele);
-            this.isDragging = false;
-            this.totalDistanceX = 0;
-            this.lastSeenAtX = 0;
-            this.curX = pos.left;
-
-            // this.handlerMouseDown.emit(event);
-            this.handlerMouseDown.next(ele);
-        };
-
-        for (let i = 0; i < th.length; i++) {
-            th[i].addEventListener("mousedown", function (e) {
-                self.OnHandlerMouseDown(this)
-            });
-        }
-
-
+        console.log('AttachEvents')
+        
         // this.$tableTimeout = setTimeout(()=> {
         //     self.headers = [];
         //
@@ -213,53 +181,9 @@ class TableCtrl implements ng.IComponentController {
         //     self.AddWindowEvent();
         // }, 0);
     }
-
-    private getRect() {
-        let rect = (this.$element[0] || this.$element).getBoundingClientRect();
-        let rT = rect.top + window.pageYOffset - document.documentElement.clientTop;
-        let rL = rect.left + window.pageXOffset - document.documentElement.clientLeft;
-        return {top: rT, left: rL};
-
-    }
-
-    private CreateDrag() {
-
-
-        let mouseDragEvent = this.handlerMouseDown.map(event => {
-            let rect = this.getRect();
-            return {top: rect.top, left: rect.left};
-        })
-            .flatMap(
-                imageOffset => this.docMouseMove.map(event => {
-                    this.isDragging = true;
-
-                    if (this.lastSeenAtX) this.totalDistanceX += event.pageX - this.lastSeenAtX;
-                    this.lastSeenAtX = event.pageX;
-
-
-                    return {
-                        ui   : {
-                            top   : 0,
-                            left  : this.totalDistanceX,
-                            handle: event
-                        },
-                        event: event
-                    }
-                })
-                    .takeUntil(this.docMouseUp)
-            );
-
-
-        this.MouseDrag = mouseDragEvent.subscribe({
-            next: pos => {
-                console.log(pos)
-                // this.LayoutElement.style.top = this.curY + pos.ui.top + 'px';
-                // this.LayoutElement.style.left = this.curX + pos.ui.left + 'px';
-            }
-        });
-    }
-
-
+    
+    
+    
     //
     // private MouseUp(e) {
     //
@@ -607,11 +531,11 @@ class TableCtrl implements ng.IComponentController {
     //     }
     //
     // }
-
+    
     $onDestroy() {
-        clearTimeout(this.$postLinkTimeout);
-        clearTimeout(this.$digestTimeout);
-        clearTimeout(this.$tableTimeout);
+        // clearTimeout(this.$postLinkTimeout);
+        // clearTimeout(this.$digestTimeout);
+        // clearTimeout(this.$tableTimeout);
         // this.RemoveWindowEvent();
     }
 }
@@ -623,15 +547,15 @@ export class Table implements ng.IComponentOptions {
     public bindings: any;
     public template: any;
     public controller: any;
-
-
+    
+    
     constructor() {
         this.bindings = {
             onUpdate: '&',
             columns : '=?'
         };
-
-
+        
+        
         this.controller = TableCtrl;
     }
 }

@@ -58,7 +58,6 @@ module.exports = webpackMerge(commonConfig, {
 		new webpack.optimize.MinChunkSizePlugin({
 			minChunkSize: 51200 // ~50kb
 		}),
-		// new UglifyJSPlugin(),
 		new UglifyJSPlugin({
 			mangle: {
 				screw_ie8: true,
