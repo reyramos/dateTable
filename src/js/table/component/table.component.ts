@@ -118,7 +118,7 @@ class TableCtrl implements ng.IComponentController, IController {
         let next;
         let th = this.thead.querySelectorAll('tr')[0].children;
         for (let i = 0, sibling; (sibling = th[i]) && (i < th.length); i++) {
-            if (this.isVisible(sibling)) {
+            if (this.isVisible(sibling) && sibling.hasAttribute('a-draggable')) {
                 let st = sibling.offsetLeft - this.tbody.scrollLeft;
                 let en = st + sibling.clientWidth;
                 if (offset > st && offset < en) next = sibling;

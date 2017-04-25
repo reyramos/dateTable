@@ -40,9 +40,6 @@ export class Draggable implements ng.IDirective {
     }
     
     private OnHandlerMouseDown(e: MouseEvent) {
-        // e.preventDefault();
-        // e.stopPropagation();
-        // this.onMouseDown = true;
         this.totalDistanceX = 0;
         this.totalDistanceY = 0;
         this.lastSeenAtX = 0;
