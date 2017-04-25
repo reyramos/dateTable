@@ -49,15 +49,7 @@ export class Draggable implements ng.IDirective {
     
     link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl: IController) => {
         this.aTable = ctrl;
-        let self = this;
-        
         this.handlerMouseDown = Observable.fromEvent(element, 'mousedown');
-        
-        
-        // element[0].addEventListener("mouseover", function (e) {
-        //         console.log('onMouseOver', this)
-        // });
-        //
         
         element[0].addEventListener("mousedown", () => this.OnHandlerMouseDown);
         
@@ -114,9 +106,7 @@ export class Draggable implements ng.IDirective {
         
         scope.$on('$destroy', () => {
             if (this.MouseDrag) this.MouseDrag.unsubscribe();
-            if (this.docMouseUp) this.docMouseUp.unsubscribe();
             element[0].removeEventListener("mousedown", () => this.OnHandlerMouseDown);
-            
         })
         
     };

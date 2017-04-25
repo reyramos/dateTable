@@ -1,9 +1,4 @@
 import * as angular from "angular";
-
-import 'rxjs/Rx';
-import {Subscription} from 'rxjs/Subscription';
-import {Subject} from "rxjs";
-import {Observable} from "rxjs/Observable";
 import {IController} from "./draggable.directive";
 
 /**
@@ -21,28 +16,20 @@ class TableCtrl implements ng.IComponentController, IController {
     public table;
     public thead;
     public tbody;
-    public $selectedColumn;
-    public $selectedColumnRows = [];
-    public $predictedColumn;
-    public headers: Array<any> = [];
+    public $selectedHTMLColumn: HTMLElement;
+    public $sColumn: any;
+    public $predictedHTMLColumn: HTMLElement;
+    public $pColumn;
     
     public columns;
     public $columns;
-    
-    
     public $postLinkTimeout;
-    public $digestTimeout;
-    public $tableTimeout;
     public $aPredictedBox;
     public $thSpacer: any;
-    
-    
-    private $aTableMoveBox;
-    // private pColumn;
-    // private $thCell: any;
-    // private $tbCell: any;
-    
     public isDragging: boolean = false;
+    
+    private onUpdate;
+    private $aTableMoveBox;
     
     
     constructor(private $element, private $scope: ng.IScope) {
@@ -74,6 +61,8 @@ class TableCtrl implements ng.IComponentController, IController {
             this.$element.append(this.$aPredictedBox);
             this.$aPredictedBox.style.display = "none";
         }
+        
+        
     }
     
     private findCell(ele) {
@@ -97,12 +86,11 @@ class TableCtrl implements ng.IComponentController, IController {
         let pos = this.getPosition(ui.element);
         let cellIndex = ui.element[0].cellIndex;
         let dir = e.event.movementX > 0;
-        // let offset = pos.left + ui.left + (dir ? ui.element[0].clientWidth : 0);
-        // let predictedColumn = this.columns[dir ? cellIndex + 1 : cellIndex - 1] || false;
+        let offset = pos.left + ui.left + (dir ? ui.element[0].clientWidth : 0);
         
-        this.$selectedColumn = ui.element;
-        // console.log(this.findCell(e.event.target).cellIndex || cellIndex);
-        console.log(dir);
+        this.$selectedHTMLColumn = ui.element;
+        this.$sColumn = this.columns[cellIndex];
+        this.onMouseOver(offset);
         
         if (pos && !this.$aTableMoveBox) {
             this.$aTableMoveBox = angular.element('<div class="a-table-move-box"></div>');
@@ -134,47 +122,68 @@ class TableCtrl implements ng.IComponentController, IController {
         }
     }
     
+    private isVisible(elem) {
+        let rect = elem.getClientRects();
+        return rect[0].left > -Math.abs(rect[0].width / 2) && rect[0].left < this.table.clientWidth;
+    }
+    
+    
+    private onMouseOver(offset: number) {
+        
+        let next;
+        let th = this.thead.querySelectorAll('tr')[0].children;
+        for (let i = 0, sibling; (sibling = th[i]) && (i < th.length); i++) {
+            if (this.isVisible(sibling)) {
+                let st = sibling.offsetLeft - this.tbody.scrollLeft;
+                let en = st + sibling.clientWidth;
+                if (offset > st && offset < en) next = sibling;
+            }
+        }
+        
+        
+        if (next && !angular.equals(this.$predictedHTMLColumn, next)) {
+            this.$predictedHTMLColumn = next;
+            this.$aPredictedBox.style.display = 'block';
+            this.$aPredictedBox.style.width = next.offsetWidth + 'px';
+            this.$aPredictedBox.style.left = (next.offsetLeft - this.tbody.scrollLeft) + 'px';
+        }
+        
+        
+    }
+    
     onMouseComplete(e) {
         if (!this.isDragging)return;
         if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
         
-        this.SelectedCellClass(false);
+        if (this.$selectedHTMLColumn) this.dropColumn(e).then(() => {
+            this.SelectedCellClass(false);
+            this.$selectedHTMLColumn = null;
+        });
         
-        
-        this.$selectedColumn = null;
         this.$aTableMoveBox = null;
+        this.$predictedHTMLColumn = null;
         this.isDragging = false;
+        
+        this.$aPredictedBox.style.display = 'none';
     }
     
     
     $doCheck() {
         clearTimeout(this.$postLinkTimeout);
         this.postSpacer();
-        // if (!angular.equals(this.$columns, this.columns)) {
-        //     this.$columns = this.columns;
-        //     this.postSpacer();
-        //
-        //     //     this.RemoveWindowEvent();
-        //     //     this.AttachEvents();
-        //     //
-        // }
+        if (!angular.equals(this.$columns, this.columns)) {
+            this.$columns = this.columns;
+            this.postSpacer();
+        }
     }
     
-    $postLink() {
-        this.postSpacer();
-        //waiting for the digest to complete;
-        // if (this.columns) this.$tableTimeout = setTimeout(() => {
-        //     // this.AttachEvents()
-        //     // this.CreateDrag();
-        // }, 0);
-    }
+    $postLink = () => this.postSpacer;
     
     
     /**
      * This is a spacer to place for the vertical bar width onto the hearder
      */
     private postSpacer() {
-        // this.$postLinkTimeout = setTimeout(() => {
         let thRow = this.thead.getElementsByTagName("tr")[0];
         let lastChild = thRow.children[thRow.children.length - 1];
         
@@ -188,9 +197,8 @@ class TableCtrl implements ng.IComponentController, IController {
             
             this.$thSpacer = (thRow as any).insertCell(thRow.children.length);
             this.$thSpacer.setAttribute("class", "eq-thead-spacer");
-            this.$thSpacer.style.width = offset + 'px';
+            this.$thSpacer.style.width = (offset + 1) + 'px';
         }
-        // }, 0);
     }
     
     
@@ -210,93 +218,58 @@ class TableCtrl implements ng.IComponentController, IController {
     }
     
     
-    //
-    // private MouseUp(e) {
-    //
-    //     let mEvent = e.originalEvent || e;
-    //     this.$element.off("mousemove touchmove");
-    //     this.$mousedown = false;
-    //
-    //     if (this.$thCell) this.$thCell.remove();
-    //     if (this.$tbCell) this.$tbCell.remove();
-    //     if (this.$aTableMoveBox) this.$aTableMoveBox.remove();
-    //
-    //     if (this.$selectedColumn) this.dropColumn(mEvent).then(() => {
-    //         this.SelectedCellClass(false);
-    //         this.$selectedColumn = null;
-    //     });
-    //
-    //     this.$predictedColumn = null;
-    //     this.$aTableMoveBox = null;
-    //     this.pColumn = null;
-    //     this.$thCell = null;
-    //     this.$tbCell = null;
-    //
-    //     this.$aPredictedBox.css({
-    //         display: 'none'
-    //     })
-    //
-    // }
-    //
-    // private dropColumn(e) {
-    //     let self: any = this;
-    //     let $target: any = this.$predictedColumn;
-    //     let $column = this.$selectedColumn[0];
-    //
-    //
-    //     clearTimeout(this.$digestTimeout);
-    //     return new Promise((resolve) => {
-    //         let $e: any = {};
-    //         if ($target) {
-    //
-    //             if ($target.cellIndex > $column.cellIndex)
-    //                 $target = this.headers[$target.cellIndex - 1][0];
-    //
-    //             Object.assign($e, {
-    //                 fromColumn: $column,
-    //                 toColumn  : $target,
-    //                 fromIndex : $column.cellIndex,
-    //                 toIndex   : $target.cellIndex,
-    //             });
-    //
-    //
-    //             if (self.columns) {
-    //                 let from = angular.copy(self.columns[$e.fromIndex]);
-    //                 //remove it from order
-    //                 self.columns.splice($e.fromIndex, 1);
-    //                 //push to new order
-    //                 self.columns.splice($e.toIndex, 0, from);
-    //                 Object.assign($e, {
-    //                     columns: self.columns
-    //                 });
-    //             }
-    //         }
-    //
-    //
-    //         if (!angular.equals(this.$columns, this.columns))
-    //             self.onUpdate({
-    //                 $event: $e
-    //             });
-    //
-    //
-    //         try {
-    //             (self.$scope as any).$apply();
-    //         } catch (e) {
-    //         }
-    //
-    //         resolve($e);
-    //     })
-    // }
+    private dropColumn(e) {
+        let $target: any = this.$predictedHTMLColumn;
+        let $column = this.$selectedHTMLColumn[0];
+        
+        return new Promise((resolve) => {
+            let $e: any = {};
+            if ($target) {
+                
+                Object.assign($e, {
+                    fromColumn: $column,
+                    toColumn  : $target,
+                    fromIndex : $column.cellIndex,
+                    toIndex   : $target.cellIndex,
+                });
+                
+                if (this.columns) {
+                    let from = angular.copy(this.columns[$e.fromIndex]);
+                    //remove it from order
+                    this.columns.splice($e.fromIndex, 1);
+                    //push to new order
+                    this.columns.splice($e.toIndex, 0, from);
+                    Object.assign($e, {
+                        columns: this.columns
+                    });
+                }
+            }
+            
+            
+            if (!angular.equals(this.$columns, this.columns))
+                this.onUpdate({
+                    $event: $e
+                });
+            
+            
+            try {
+                (this.$scope as any).$apply();
+            } catch (e) {
+            }
+            
+            resolve($e);
+        })
+    }
     
     
     private SelectedCellClass(bool: boolean, name?: string) {
         
-        let cellIndex = (this.$selectedColumn[0] as any).cellIndex;
+        let cellIndex = (this.$selectedHTMLColumn[0] as any).cellIndex;
         
         let _class = name ? [] : ['selected-cell', 'last-cell'];
         if (name) _class.push(name + "-cell");
         
-        this.$selectedColumn[bool ? 'addClass' : 'removeClass'](_class.join(" "));
+        this.$selectedHTMLColumn[bool ? 'addClass' : 'removeClass'](_class.join(" "));
         angular.element(this.table).find("tr td:nth-child(" + (cellIndex + 1) + ")").each(function (i, cell) {
             angular.element(cell)[bool ? 'addClass' : 'removeClass'](_class.join(" "));
         });
@@ -310,7 +283,7 @@ class TableCtrl implements ng.IComponentController, IController {
         let th = angular.element("<th/>");
         table.addClass(this.table.className);
         
-        this.$selectedColumn.addClass('selected-cell');
+        this.$selectedHTMLColumn.addClass('selected-cell');
         
         table.css({
             width : '100%',
@@ -318,7 +291,7 @@ class TableCtrl implements ng.IComponentController, IController {
         });
         
         
-        th.html(this.$selectedColumn.html());
+        th.html(this.$selectedHTMLColumn.html());
         tr.append(th);
         thead.append(tr);
         table.append(thead);
