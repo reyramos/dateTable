@@ -54,7 +54,8 @@ module.exports = {
 		alias: {
 			angular: "angular",
 			jquery: 'jquery/dist/jquery',
-			rx: "rxjs/index"
+			rx: "rxjs/index",
+			system: "systemjs/dist/system.src"
 		}
 	},
 	module: {
@@ -211,7 +212,8 @@ module.exports = {
 			"jquery": "jquery",
 			'window.$': 'jquery',
 			"window.jQuery": "jquery",
-			"Rx": 'rx'
+			"Rx": 'rx',
+			// "System": 'System'
 		})
 	],
 	// target: "node",
