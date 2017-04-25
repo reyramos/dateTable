@@ -62,32 +62,6 @@ class DemoComponentCtrl implements ng.IComponentController {
         console.log('onColumnChange', $e)
     }
     
-    
-    isVisible(elem) {
-        var table = document.querySelector("table");
-        var tbody = document.querySelector("table > tbody");
-        // console.log(table.clientWidth)
-        // console.log(table.clientHeight)
-        // console.log(tbody.scrollLeft)
-        
-        let rect = elem.getClientRects();
-        let offset = -Math.abs(rect[0].width / 2);
-        if (rect[0].left > offset && rect[0].left < table.clientWidth)
-            console.log('getClientRects', elem, elem.getClientRects())
-        // return elem.offsetWidth > 0 || elem.offsetHeight > 0 || elem.getClientRects().length > 0;
-    }
-    
-    testTable() {
-        var table = document.querySelector("table");
-        var thead = document.querySelector("table > thead");
-        
-        
-        let th = thead.querySelectorAll('tr')[0].children;
-        for (let i = 0; i < th.length; i++) {
-            this.isVisible(th[i])
-        }
-    }
-    
 }
 
 require('./style.less');
