@@ -62,7 +62,7 @@ module.exports = {
 		rules: [
 			{
 				test: /\.ts$/,
-				use: ["babel-loader","awesome-typescript-loader", "angular1-template-loader"],
+				use: ["babel-loader", "awesome-typescript-loader", "angular1-template-loader"],
 				exclude: [/\.(spec|e2e|d)\.ts$/]
 			},
 			{
@@ -78,7 +78,10 @@ module.exports = {
 			{
 				test: /^(?!.*\.min\.css$).*\.css$/,
 				exclude: helpers.root("src", "js"),
-				use: ExtractTextPlugin.extract({fallback: "style-loader", use: ["css-loader?sourceMap"]})
+				use: ExtractTextPlugin.extract({
+					fallback: "style-loader",
+					use: ["css-loader?sourceMap"]
+				})
 			},
 			{
 				test: /\.less$/,
@@ -193,7 +196,7 @@ module.exports = {
 		}),
 		new HtmlWebpackPlugin({
 			// hash: true,
-			baseUrl :"/",
+			baseUrl: "/",
 			minify: {
 				removeComments: true,
 				collapseWhitespace: true,

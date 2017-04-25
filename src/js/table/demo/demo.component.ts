@@ -64,7 +64,7 @@ class DemoComponentCtrl implements ng.IComponentController {
     
 }
 
-require('./style.less');
+import './style.less';
 
 export class DemoComponent implements ng.IComponentOptions {
     public template: any;
