@@ -17,13 +17,12 @@ class TableCtrl implements ng.IComponentController, IController {
     public thead;
     public tbody;
     public $selectedHTMLColumn: HTMLElement;
-    public $sColumn: any;
     public $predictedHTMLColumn: HTMLElement;
+    public $sColumn: any;
     public $pColumn;
     
     public columns;
     public $columns;
-    public $postLinkTimeout;
     public $aPredictedBox;
     public $thSpacer: any;
     public isDragging: boolean = false;
@@ -61,20 +60,8 @@ class TableCtrl implements ng.IComponentController, IController {
             this.$element.append(this.$aPredictedBox);
             this.$aPredictedBox.style.display = "none";
         }
-        
-        
     }
     
-    private findCell(ele) {
-        if (!ele)return false;
-        
-        if (['TH', 'TD'].indexOf(ele.nodeName) > -1) {
-            return ele;
-        } else {
-            return this.findCell(ele.parentNode);
-        }
-        
-    }
     
     //INPUT
     onMouseDrag(e) {
@@ -167,12 +154,12 @@ class TableCtrl implements ng.IComponentController, IController {
     
     
     $doCheck() {
-        clearTimeout(this.$postLinkTimeout);
         this.postSpacer();
-        if (!angular.equals(this.$columns, this.columns)) {
-            this.$columns = this.columns;
-            this.postSpacer();
-        }
+        // if (!angular.equals(this.$columns, this.columns)) {
+        //     console.log('$doCheck')
+        //     this.$columns = angular.copy(this.columns);
+        //     this.postSpacer();
+        // }
     }
     
     $postLink = () => this.postSpacer;
@@ -183,16 +170,9 @@ class TableCtrl implements ng.IComponentController, IController {
      */
     private postSpacer() {
         let thRow = this.thead.getElementsByTagName("tr")[0];
-        let lastChild = thRow.children[thRow.children.length - 1];
-        
         let offset = this.thead.clientWidth - this.tbody.clientWidth;
-        if (this.$thSpacer) {
-            this.$thSpacer.remove();
-            lastChild.className.replace(/a-row-last/g, '');
-        }
+        if (this.$thSpacer) this.$thSpacer.remove();
         if (offset) {
-            lastChild.className += " a-row-last";
-            
             this.$thSpacer = (thRow as any).insertCell(thRow.children.length);
             this.$thSpacer.setAttribute("class", "eq-thead-spacer");
             this.$thSpacer.style.width = (offset + 1) + 'px';
@@ -254,6 +234,7 @@ class TableCtrl implements ng.IComponentController, IController {
                 (this.$scope as any).$apply();
             } catch (e) {
             }
+            
             
             resolve($e);
         })

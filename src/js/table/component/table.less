@@ -63,8 +63,8 @@ a-table {
                 display: inline-block;
             }
 
-            th {
-                &.a-row-last.selected-cell {
+            th.selected-cell {
+                &[a-draggable]:last-of-type {
                     border-color: transparent;
                 }
             }
@@ -79,13 +79,8 @@ a-table {
         th, td {
             position: relative;
             &.selected-cell {
-                //position: absolute;
                 visibility: hidden;
                 pointer-events: none;
-
-                &.last-cell {
-                    border: none;
-                }
             }
 
             &.a-table-predicted-column {
