@@ -28,8 +28,6 @@
 			js: 'js',
 			typescript: 'npm:typescript/lib/typescript.js',
 			angular: 'bower:angular/angular.js',
-
-
 			// other libraries
 			'rxjs': 'npm:rxjs'
 		},
@@ -43,6 +41,11 @@
 			}
 		}
 	});
+
+
+	// 'ui.router'
+	// 	, 'ngSanitize'
+	// 	, 'oc.lazyLoad'
 	System
 		.import('js/app.module.ts')
 		.then(null, console.error.bind(console));
