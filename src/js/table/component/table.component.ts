@@ -78,11 +78,9 @@ class TableCtrl implements ng.IComponentController, IController {
     
     //INPUT
     onMouseDrag(e) {
-        if (!this.columns)return;
-        
-        
         let ui = e.ui;
-        
+        //if we are not moving do nothing
+        if (!this.columns || ui.left === 0)return;
         let pos = this.getPosition(ui.element);
         let cellIndex = ui.element[0].cellIndex;
         let dir = e.event.movementX > 0;

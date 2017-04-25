@@ -39,7 +39,9 @@ export class Draggable implements ng.IDirective {
         this.docMouseUp = Observable.fromEvent(document, 'mouseup');
     }
     
-    private OnHandlerMouseDown(event: MouseEvent) {
+    private OnHandlerMouseDown(e: MouseEvent) {
+        // e.preventDefault();
+        // e.stopPropagation();
         // this.onMouseDown = true;
         this.totalDistanceX = 0;
         this.totalDistanceY = 0;
@@ -54,17 +56,16 @@ export class Draggable implements ng.IDirective {
         element[0].addEventListener("mousedown", () => this.OnHandlerMouseDown);
         
         let mouseDragEvent = this.handlerMouseDown
-            .map(event => {
+            .map(e => {
+                e.preventDefault();
                 let rect = getRect();
                 return {top: rect.top, left: rect.left};
             })
             .flatMap(
                 offset => this.docMouseMove.map(event => {
                     this.aTable.isDragging = true;
-                    
                     if (this.lastSeenAtX) this.totalDistanceX += event.pageX - this.lastSeenAtX;
                     this.lastSeenAtX = event.pageX;
-                    
                     if (this.lastSeenAtY) this.totalDistanceY += event.pageY - this.lastSeenAtY;
                     this.lastSeenAtY = event.pageY;
                     
