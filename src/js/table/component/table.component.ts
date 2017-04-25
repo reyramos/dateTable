@@ -288,7 +288,7 @@ class TableCtrl implements ng.IComponentController, IController {
 }
 
 
-require('./table.less');
+require('./styles.less');
 
 export class Table implements ng.IComponentOptions {
     public bindings: any;
