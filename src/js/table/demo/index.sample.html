@@ -10,12 +10,12 @@
 <div class="container">
     <section class="bs-docs-section" style="padding-top: 40px;height: 500px;">
 
-        <a-table on-update="$ctrl.onColumnChange($event)" columns="$ctrl.columns" reorder="true">
+        <a-table on-update="$ctrl.onColumnChange($event)" columns="$ctrl.columns">
             <table>
                 <thead>
                 <tr>
-                    <th ng-repeat="p in $ctrl.columns">
-                        <span><button ng-click="$ctrl.TheHead($event, p)">{{p.name}}</button></span>
+                    <th ng-repeat="p in $ctrl.columns" a-draggable>
+                        <span><button ng-click="$ctrl.TheHead($event, p); $event.preventDefault();">{{p.name}}</button></span>
                     </th>
                 </tr>
                 </thead>
