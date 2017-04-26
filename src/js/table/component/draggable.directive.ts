@@ -12,6 +12,7 @@ declare let $: any;
 export interface IController {
     onMouseDrag?($event): void;
     onMouseComplete?($event): void;
+    onChanges($event): void;
     isDragging?: boolean;
 }
 
@@ -46,12 +47,10 @@ export class Draggable implements ng.IDirective {
         this.lastSeenAtY = 0;
     };
     
-    link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl: IController) => {
-        this.aTable = ctrl;
+    
+    private ngOnInit(element: ng.IAugmentedJQuery) {
         this.handlerMouseDown = Observable.fromEvent(element, 'mousedown');
-        
         element[0].addEventListener("mousedown", () => this.OnHandlerMouseDown);
-        
         let mouseDragEvent = this.handlerMouseDown
             .map(e => {
                 e.preventDefault();
@@ -82,7 +81,7 @@ export class Draggable implements ng.IDirective {
         
         this.MouseDrag = mouseDragEvent.subscribe({
             next: (e) => {
-                ctrl.onMouseDrag.apply(ctrl, [e]);
+                this.aTable.onMouseDrag.apply(this.aTable, [e]);
             }
         });
         
@@ -90,7 +89,7 @@ export class Draggable implements ng.IDirective {
         this.docMouseUp.subscribe({
             next: (e) => {
                 this.OnHandlerMouseDown(e);
-                ctrl.onMouseComplete.apply(ctrl, [e]);
+                this.aTable.onMouseComplete.apply(this.aTable, [e]);
             }
         });
         
@@ -101,6 +100,13 @@ export class Draggable implements ng.IDirective {
             return {top: rT, left: rL};
         }
         
+    }
+    
+    
+    link = (scope: ng.IScope, element: ng.IAugmentedJQuery, attrs: ng.IAttributes, ctrl: IController) => {
+        this.aTable = ctrl;
+        this.ngOnInit(element);
+        ctrl.onChanges = () => this.ngOnInit(element);
         
         scope.$on('$destroy', () => {
             if (this.MouseDrag) this.MouseDrag.unsubscribe();

@@ -19,7 +19,7 @@ class TableCtrl implements ng.IComponentController, IController {
     public $selectedHTMLColumn: HTMLElement;
     public $predictedHTMLColumn: HTMLElement;
     public $sColumn: any;
-    public $pColumn;
+    public onChanges;
     
     public columns;
     public $columns;
@@ -153,14 +153,7 @@ class TableCtrl implements ng.IComponentController, IController {
     }
     
     
-    $doCheck() {
-        this.postSpacer();
-        // if (!angular.equals(this.$columns, this.columns)) {
-        //     console.log('$doCheck')
-        //     this.$columns = angular.copy(this.columns);
-        //     this.postSpacer();
-        // }
-    }
+    $doCheck = () => this.postSpacer;
     
     $postLink = () => this.postSpacer;
     
@@ -229,6 +222,8 @@ class TableCtrl implements ng.IComponentController, IController {
                     $event: $e
                 });
             
+            //trigger to build the draggable feature
+            this.onChanges();
             
             try {
                 (this.$scope as any).$apply();
@@ -280,10 +275,6 @@ class TableCtrl implements ng.IComponentController, IController {
     
     
     $onDestroy() {
-        // clearTimeout(this.$postLinkTimeout);
-        // clearTimeout(this.$digestTimeout);
-        // clearTimeout(this.$tableTimeout);
-        // this.RemoveWindowEvent();
     }
 }
 
