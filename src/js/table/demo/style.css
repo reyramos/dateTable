@@ -1,0 +1,26 @@
+table {
+  width: 100%;
+  border: thin solid #444444;
+}
+table thead th,
+table thead td {
+  border-bottom: thin solid #444444;
+}
+table tbody tr:first-child th,
+table tbody tr:first-child td {
+  border-top: none;
+}
+table td,
+table th {
+  padding: 10px;
+  border-right: thin solid #444444;
+}
+table td:not(th),
+table th:not(th) {
+  border-top: thin solid #444444;
+}
+table td > span,
+table th > span {
+  width: 250px;
+  display: inline-block;
+}
