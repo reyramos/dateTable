@@ -8,11 +8,11 @@ var commonConfig = require('./webpack.common.js');
 var helpers = require('./helpers');
 
 var userConfig = fs.existsSync('.user.config.js') ? require('./.user.config') : {
-		devServer: {
-			historyApiFallback: true,
-			stats: 'minimal'
-		}
-	};
+	devServer: {
+		historyApiFallback: true,
+		stats: 'minimal'
+	}
+};
 
 
 const ENV = process.env.NODE_ENV = process.env.ENV = 'development';
@@ -41,8 +41,22 @@ module.exports = webpackMerge(commonConfig, {
 		reasons: true,
 		errorDetails: true
 	},
+	module: {
+		rules: [
+			/*
+			 * css loader support for *.css files (styles directory only)
+			 * Loads external css styles into the DOM, supports HMR
+			 *
+			 */
+			{
+				test: /\.css$/,
+				use: ['style-loader', 'css-loader'],
+				include: [helpers.root('src', 'js')]
+			}
+		]
+	},
 	plugins: [
-		new ExtractTextPlugin({ filename: '[name].css', disable: true, allChunks: true }),
+		new ExtractTextPlugin({filename: '[name].css', disable: true, allChunks: true}),
 		new webpack.DefinePlugin({
 			'process.env': {
 				'ENV': JSON.stringify(ENV)

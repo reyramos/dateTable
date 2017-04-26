@@ -45,8 +45,6 @@ module.exports = {
 	resolve: {
 		// Make sure root is src
 		modules: [
-			helpers.root('src'),
-			helpers.root('src', 'js'),
 			helpers.root('node_modules'),
 			helpers.root('bower_components')
 		],
@@ -78,10 +76,7 @@ module.exports = {
 			{
 				test: /^(?!.*\.min\.css$).*\.css$/,
 				exclude: helpers.root("src", "js"),
-				use: ExtractTextPlugin.extract({
-					fallback: "style-loader",
-					use: ["css-loader?sourceMap"]
-				})
+				use: ExtractTextPlugin.extract({fallback: "style-loader", use: ["css-loader?sourceMap"]})
 			},
 			{
 				test: /\.less$/,
