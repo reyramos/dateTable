@@ -9,44 +9,71 @@
 
 (function (global) {
 	System.config({
-		transpiler: 'typescript',
-		typescriptOptions: {
-			emitDecoratorMetadata: true,
-			experimentalDecorators: true
-		},
-		meta: {
-			'npm:typescript/lib/typescript.js': {
-				"exports": "ts"
+		packages: {
+			"plugin-typescript": {
+				"main": "plugin.js"
+			},
+			"typescript": {
+				"main": "lib/typescript.js",
+				"meta": {
+					"lib/typescript.js": {
+						"exports": "ts"
+					}
+				}
+			},
+			"rxjs": {
+				"defaultExtension": 'js'
+			},
+			"js": {
+				"defaultExtension": 'ts'
 			}
 		},
 		paths: {
 			// paths serve as alias
 			'npm:': 'node_modules/',
-			'bower:': 'bower_components/',
+			'bower:': 'bower_components/'
 		},
+
+		// create aliases
+		// SystemJS Plugins, referenced with "moduleName!pluginName"
 		map: {
-			js: 'js',
-			typescript: 'npm:typescript/lib/typescript.js',
-			angular: 'bower:angular/angular.js',
-			// other libraries
-			'rxjs': 'npm:rxjs'
+			"plugin-typescript": "node_modules/plugin-typescript/lib/",
+			"typescript": "npm:/typescript/",
+			"angular": 'bower:angular/angular.js',
+			'rxjs': 'npm:rxjs',
+			'css': 'npm:systemjs-plugin-css/css.js',
+			'text': 'npm:systemjs-plugin-text/text.js'
+
 		},
-		// packages tells the System loader how to load when no filename and/or no extension
-		packages: {
-			app: {
-				defaultExtension: 'js'
+		transpiler: "plugin-typescript",
+		meta: {
+			'*.css': {loader: 'css'},
+			"./js/app.module.ts": {
+				format: "esm",
+				loader: "plugin-typescript"
 			},
-			rxjs: {
-				defaultExtension: 'js'
+			'angular': {format: 'global', exports: 'angular'},
+			'*.tpl': {
+				loader: 'text'
+			},
+			'*.html': {
+				loader: 'text'
+			},
+			'*.json': {
+				loader: 'json'
 			}
+		},
+		typescriptOptions: {
+			"target": "es5",
+			"module": "system"
 		}
 	});
 
 
-	// 'ui.router'
-	// 	, 'ngSanitize'
-	// 	, 'oc.lazyLoad'
-	System
-		.import('js/app.module.ts')
-		.then(null, console.error.bind(console));
+	window.addEventListener('load', function () {
+		System
+			.import('js/app.module.ts')
+			.then(null, console.error.bind(console));
+	});
+
 })(this);

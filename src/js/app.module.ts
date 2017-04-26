@@ -1,9 +1,12 @@
 'use strict';
 
 
-import * as angular from "angular";
+// import {module} from 'angular';
+declare let angular;
+
 import {RouteProvider} from "./routes";
 import {Draggable} from "./table/component/draggable.directive";
+import {CoreModule} from "./core/index";
 
 import "../css/styles.css";
 
@@ -11,7 +14,7 @@ export let app: any = angular.module('app', [
     'ui.router'
     , 'ngSanitize'
     , 'oc.lazyLoad'
-    , require('./core').name
+    , CoreModule.name
 ]);
 
 app.directive('aDraggable', Draggable.factory());

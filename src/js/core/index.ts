@@ -1,17 +1,19 @@
 import IQService = angular.IQService;
 import {Range} from "./filter/range";
+import {Core} from "./module";
+import {LazyLoaderProvider} from "./providers/lazy-loader.provider";
+import {RouteStateProvider} from "./providers/route-state.provider";
+
 
 /**
  * Created by reyra on 1/26/2017.
  */
 
-var app = require('./module').app;
 
+LazyLoaderProvider(Core);
+RouteStateProvider(Core);
 
-require('./providers/lazy-loader.provider')(app);
-require('./providers/route-state.provider')(app);
+Core.filter('range', Range);
 
+export let CoreModule = Core;
 
-app.filter('range', Range);
-
-module.exports = app;
