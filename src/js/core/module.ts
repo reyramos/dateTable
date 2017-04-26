@@ -3,7 +3,7 @@
  */
 
 "use strict";
-declare let angular;
+import * as angular from "angular";
 // import {module} from 'angular';
 
 export let Core = angular.module("app.core", []);

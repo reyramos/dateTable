@@ -105,9 +105,16 @@ module.exports = {
 				use: ["raw-loader", "html-minify"]
 			},
 			{
-				test: /^index\.html$/, use: ["html", {
-				loader: "file-loader", options: {name: "[path][name].[ext]"}
-			}]
+				test: /^index\.html$/,
+				use: ["html",
+					{
+						loader: "file-loader", options: {name: "[path][name].[ext]"}
+					}
+				]
+			},
+			{
+				test: /\.html$/,
+				use: "es6-template-strings"
 			},
 			{
 				test: /\.woff(2)?(\?v=\d+\.\d+\.\d+)?$/,

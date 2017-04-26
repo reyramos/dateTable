@@ -4,15 +4,13 @@
 
 "use strict";
 
-import {module} from 'angular';
+import * as angular from "angular";
 
 
 import {NavComponent} from "./components/nav.component";
 import {HomeComponent} from "./components/home.component";
-import {AboutComponent} from "./components/about.component";
-import {ContactComponent} from "./components/contact.component";
 
-export let app = module("app.public", []);
+let app = angular.module("app.public", []);
 
 
 /**
@@ -30,8 +28,5 @@ export let app = module("app.public", []);
 
 app.component('eqNav', new NavComponent());
 app.component('eqHome', new HomeComponent());
-app.component('eqAbout', new AboutComponent());
-app.component('eqContact', new ContactComponent());
-
-
+export let PublicModule = app;
 

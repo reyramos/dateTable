@@ -4,6 +4,7 @@
 
 
 "use strict";
+import template from './nav.component.html';
 
 class NavCtrl {
     static $inject = ['$element'];
@@ -18,7 +19,7 @@ export class NavComponent implements ng.IComponentOptions {
     public template: string;
 
     constructor() {
-        this.template = require('./nav.component.html');
+        this.template = template;
         this.controller = NavCtrl;
     }
 }

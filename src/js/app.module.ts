@@ -2,7 +2,7 @@
 
 
 // import {module} from 'angular';
-declare let angular;
+import * as angular from "angular";
 
 import {RouteProvider} from "./routes";
 import {Draggable} from "./table/component/draggable.directive";

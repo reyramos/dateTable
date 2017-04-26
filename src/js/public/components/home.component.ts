@@ -4,6 +4,7 @@
 
 
 "use strict";
+import template from './home.component.html';
 
 class HomeCtrl {
 
@@ -19,7 +20,7 @@ export class HomeComponent implements ng.IComponentOptions {
     public template: string;
 
     constructor() {
-        this.template = require('./home.component.html');
+        this.template = template;
         this.controller = HomeCtrl
     }
 }
